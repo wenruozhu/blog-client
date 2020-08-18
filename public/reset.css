@@ -1,0 +1,41 @@
+/* http://www.zhangxinxu.com/wordpress/?p=758 */
+html,body{
+    height: 100%;
+}
+body,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+form {
+    margin: 0;
+}
+a{
+    text-decoration: none;
+}
+ol,
+ul {
+    margin: 0;
+    padding: 0;
+}
+li{
+    list-style: none;
+}
+
+img{
+    display: inline-block;
+}
+button,
+input,
+select,
+textarea {
+  outline: 0;
+  border: none;
+  background: 0 0;
+  font-family: inherit;
+}
