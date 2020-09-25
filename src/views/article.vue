@@ -3,8 +3,11 @@
     <ul>
       <li v-for="(article,index) in articleList" :key="index">
         <router-link :to="{name: 'article_detail',query: { articleId: article.id }}">
-          <h6 class="title">{{article.title}}</h6>
-          <span class="date">{{article.publishTime}}</span>
+          <article>
+            <span class="date">{{article.publishTime}}</span>
+            <span class="tag">{{article.category|category}}</span>
+            <h6 class="title">{{article.title}}</h6>
+          </article>
         </router-link>
       </li>
     </ul>
@@ -24,6 +27,20 @@ export default {
   created() {
     this.getArticle();
   },
+  filters: {
+    category(val) {
+      switch (val) {
+        case 1:
+          return "Code";
+          break;
+        case 2:
+          return "Life";
+          break;
+        default:
+          break;
+      }
+    }
+  },
   methods: {
     getArticle() {
       axios
@@ -37,7 +54,7 @@ export default {
           this.articleList = res.data;
         })
         .catch(err => {});
-    },
+    }
     /* readArticle(articleId) {
       this.$router.push({
         name: "article_detail",
@@ -53,26 +70,47 @@ export default {
   margin: 20px auto;
 }
 .article ul li {
+  padding: 0.5rem 2rem;
+  position: relative;
+}
+article {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
   font-size: 16px;
 }
-.article ul li h6 {
-  height: 35px;
-  line-height: 35px;
-  color: rgb(33, 33, 33);
-  font-size: 20px;
+article:before {
+  content: " ";
+  width: 6px;
+  height: 6px;
+  position: absolute;
+  top: 0;
+  left: 12px;
+  bottom: 0;
+  margin: auto;
+  background: #ccc;
+  border-radius: 50%;
+}
+article span.date {
+  font-size: 1rem;
+  color: #ccc;
+}
+article span.tag {
+  padding: 0.1em 0.4em;
+  margin: 0 0.8rem;
+  font-size: 10px;
+  color: #457e86;
+  background: rgba(158, 169, 179, 0.12);
+  border-radius: 2px;
+  cursor: pointer;
+}
+article h6 {
+  width: 70%;
+  text-decoration: underline;
+  font-size: 16px;
+  color: #24292e;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden;
-  letter-spacing: 2px;
-}
-.article ul li .date {
-  display: inline-block;
-  height: 25px;
-  line-height: 25px;
-  color: rgb(11, 122, 122);
-  margin-right: 15px;
-  font-size: 16px;
-  font-family: "Iowan Old Style", Palatino, Georgia, "Times New Roman", Times,
-    serif;
 }
 </style>
