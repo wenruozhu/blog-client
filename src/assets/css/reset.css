@@ -7,6 +7,9 @@ body {
     font-weight: 400;
     line-height: 1.4;
     -webkit-font-smoothing: antialiased;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    /* 用于 ios下滑动不流畅 */
 }
 
 *,

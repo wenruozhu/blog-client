@@ -5,14 +5,12 @@
     </div>
     <div class="meta">
       <span class="time">2020.05.31 16:07</span>
-      <span class="num">字数 {{article.content.length}}</span>
+      <span class="num">字数 {{String(article.content).length}}</span>
       <span class="view">喜欢 13</span>
       <span class="comment">评论 0</span>
       <span class="count"></span>
     </div>
-    <div class="content">
-      <p>{{article.content}}</p>
-    </div>
+    <div class="content">{{article.content}}</div>
     <!-- 评论模块 -->
     <div class="comment">
       <form class="post-box">
@@ -26,7 +24,8 @@
           </div>
           <div class="editor">
             <transition-group tag="div" name="list">
-              <div class="will-reply" key="1">
+              <!-- 回复预览 -->
+              <!-- <div class="will-reply" key="1">
                 <div class="reply-user">
                   <p>
                     <span>回复</span>
@@ -39,54 +38,80 @@
                   </a>
                 </div>
                 <div class="reply-preview">如果你总是这样轻言放弃的话，无论过多久都只会原地踏步。</div>
-              </div>
-              <div class="comment-box" key="3">
-                <textarea name="comment" placeholder="记得留下您的昵称和邮箱,可以快速收到回复..." cols="3" rows="5"></textarea>
+              </div>-->
+              <div class="comment-box" key="2">
+                <textarea
+                  name="comment"
+                  placeholder="记得留下您的昵称和邮箱,可以快速收到回复..."
+                  cols="3"
+                  rows="5"
+                  maxlength="200"
+                  v-model="content"
+                ></textarea>
               </div>
             </transition-group>
           </div>
         </div>
         <div class="user-info">
           <div class="name">
-            <input type="text" name="username" placeholder="昵称 （必填）" maxlength="10" />
+            <input
+              type="text"
+              name="nickname"
+              placeholder="昵称 （必填）"
+              v-model="nickname"
+              maxlength="10"
+            />
           </div>
           <div class="email">
-            <input type="text" name="email" placeholder="邮箱 （必填，不会公开）" maxlength="20" />
+            <input
+              type="text"
+              name="email"
+              placeholder="邮箱 （必填，不会公开）"
+              v-model="email"
+              maxlength="20"
+            />
           </div>
           <div class="site">
-            <input type="text" name="site" placeholder="网站 （https://非必填）" maxlength="20" />
+            <input
+              type="text"
+              name="site"
+              placeholder="网站 （https://非必填）"
+              v-model="site"
+              maxlength="20"
+            />
           </div>
         </div>
-        <div class="submit">
+        <div class="submit" @click="submitComment">
           <span>发布</span>
           <svg-icon id="release" icon-class="release"></svg-icon>
         </div>
       </form>
       <div class="list-box">
         <ul>
-          <li class="comment-item">
+          <li v-for="(comment,index) in commentList" :key="index" class="comment-item">
             <div class="comment-avatar">
-              <a target="_blank" href="#">
+              <a target="_blank" :href="comment.site">
                 <img src="../assets/img/avatar.jpg" alt />
               </a>
             </div>
             <div class="comment-body">
               <div class="comment-header">
-                <a target="_blank" class="user-name" href="#">
-                  <span>熊大</span>
+                <a target="_blank" class="user-name" :href="comment.site">
+                  <span>{{comment.nickname}}</span>
                 </a>
-                <span class="time">2020.08.08 08:28</span>
+                <span class="time">{{comment.publishTime}}</span>
               </div>
               <div class="comment-content">
-                <div class="reply-box">
+                <!-- 引用回复 -->
+                <!-- <div class="reply-box">
                   <div class="reply-name">
                     <a href>熊二</a>
                   </div>
                   <div class="reply-content">
                     <p>技术比人情更可靠，你所学习的技术知识，积累的那些细节和经验，百分之一百日后可以给你带来令你欣喜的价值，而且这个价值连绵不绝，持续不断，越筑越高。因为技术不像人，技术不会欺骗你，而且越基础的技术越忠诚。</p>
                   </div>
-                </div>
-                <p>永远年轻，永远热泪盈眶。</p>
+                </div>-->
+                <p>{{comment.content}}</p>
               </div>
               <div class="comment-footer">
                 <a href="#" class="like">
@@ -107,17 +132,26 @@
 </template>
 
 <script>
+import moment from "moment";
+moment.locale("zh-CN");
 export default {
   name: "article-detail",
   data() {
     return {
       articleId: "", //文章id
-      article: "" //文章内容
+      article: "", //文章内容
+      commentList: [], //文章评论列表
+      // 文章评论参数
+      content: "",
+      nickname: "",
+      email: "",
+      site: ""
     };
   },
   created() {
     this.articleId = this.$route.query.articleId;
     this.searchArticle();
+    this.getComment();
   },
   methods: {
     searchArticle() {
@@ -132,6 +166,47 @@ export default {
             this.article = res.data[0];
           }
         });
+    },
+    getComment() {
+      axios.get(`/api/v1/comment/${this.articleId}`).then(res => {
+        if (res.status == 200) {
+          for (const comment of res.data) {
+            comment.publishTime = moment(comment.publishTime).format(
+              "YYYY.MM.DD HH:mm"
+            );
+          }
+          this.commentList = res.data;
+        }
+      });
+    },
+    submitComment() {
+      if (!this.content) {
+        return;
+      }
+      if (!this.nickname) {
+        return;
+      }
+      if (!this.email) {
+        return;
+      }
+      let params = {
+        articleId: this.articleId,
+        // 评论参数
+        content: this.content,
+        nickname: this.nickname,
+        email: this.email,
+        site: this.site
+      };
+
+      axios
+        .post(`/api/v1/comment`, params)
+        .then(res => {
+          const data = res;
+          if (res.status == 200) {
+            this.getComment();
+          }
+        })
+        .catch(err => {});
     }
   }
 };

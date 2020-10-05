@@ -166,8 +166,6 @@ export default {
   text-decoration: underline;
   border-radius: 0.3rem;
 }
-.message-list {
-}
 .message-list .columns {
   display: flex;
   justify-content: space-between;
@@ -178,14 +176,6 @@ export default {
 .message-list .column:nth-of-type(2n) {
   margin: 0 1rem;
 }
-/* .message-list ul {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  max-width: 100%;
-}
-.message-list ul li {
-} */
 .message {
   position: relative;
   left: 0;
