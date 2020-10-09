@@ -6,7 +6,7 @@
         <a href="mailto:769917560@qq.com" _target="_blank">邮箱</a>
       </li>
       <li>
-        <a href="https://github.com/wenruozhu">Github</a>
+        <a target="_blank" href="https://github.com/wenruozhu">Github</a>
       </li>
     </ul>
   </div>

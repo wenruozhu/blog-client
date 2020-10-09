@@ -13,10 +13,10 @@
     <div class="content">{{article.content}}</div>
     <!-- 评论模块 -->
     <div class="comment">
-      <form class="post-box">
+      <form id="post-box" class="post-box">
         <div class="count">
-          <span class="num">0</span>&nbsp;
-          评论
+          <span class="num">{{commentList.length}}</span>&nbsp;
+          条评论
         </div>
         <div class="edit-box">
           <div class="avatar" key="2">
@@ -25,66 +25,78 @@
           <div class="editor">
             <transition-group tag="div" name="list">
               <!-- 回复预览 -->
-              <!-- <div class="will-reply" key="1">
+              <div class="will-reply" v-if="!!replyId" key="1">
                 <div class="reply-user">
                   <p>
                     <span>回复</span>
                     <a href>
-                      <strong>熊大</strong>
+                      <strong>{{replyCommentSelf.nickname}}</strong>
                     </a>
                   </p>
-                  <a href>
+                  <a href="javascript:;" @click="cancelReply">
                     <svg-icon id="cancel" icon-class="cancel"></svg-icon>
                   </a>
                 </div>
-                <div class="reply-preview">如果你总是这样轻言放弃的话，无论过多久都只会原地踏步。</div>
-              </div>-->
-              <div class="comment-box" key="2">
+                <div class="reply-preview">{{replyCommentSelf.content}}</div>
+              </div>
+              <!-- <div class="comment-box" key="2">
                 <textarea
                   name="comment"
                   placeholder="记得留下您的昵称和邮箱,可以快速收到回复..."
                   cols="3"
                   rows="5"
+                  ref="markdown"
                   maxlength="200"
                   v-model="content"
                 ></textarea>
+              </div>-->
+              <div class="markdown" key="2">
+                <div
+                  class="markdown-editor"
+                  ref="markdown"
+                  contenteditable="true"
+                  placeholder="记得留下您的昵称和邮箱,可以快速收到回复..."
+                  @keyup="commentContentChange($event)"
+                ></div>
               </div>
             </transition-group>
           </div>
         </div>
-        <div class="user-info">
-          <div class="name">
-            <input
-              type="text"
-              name="nickname"
-              placeholder="昵称 （必填）"
-              v-model="nickname"
-              maxlength="10"
-            />
+        <transition-group tag="div" name="list">
+          <div class="user-info" :key="1">
+            <div class="name">
+              <input
+                type="text"
+                name="nickname"
+                placeholder="昵称 （必填）"
+                v-model="nickname"
+                maxlength="10"
+              />
+            </div>
+            <div class="email">
+              <input
+                type="text"
+                name="email"
+                placeholder="邮箱 （必填，不会公开）"
+                v-model="email"
+                maxlength="20"
+              />
+            </div>
+            <div class="site">
+              <input
+                type="text"
+                name="site"
+                placeholder="网站 （https://非必填）"
+                v-model="site"
+                maxlength="20"
+              />
+            </div>
           </div>
-          <div class="email">
-            <input
-              type="text"
-              name="email"
-              placeholder="邮箱 （必填，不会公开）"
-              v-model="email"
-              maxlength="20"
-            />
+          <div class="submit" :key="2" @click="submitComment">
+            <span>发布</span>
+            <svg-icon id="release" icon-class="release"></svg-icon>
           </div>
-          <div class="site">
-            <input
-              type="text"
-              name="site"
-              placeholder="网站 （https://非必填）"
-              v-model="site"
-              maxlength="20"
-            />
-          </div>
-        </div>
-        <div class="submit" @click="submitComment">
-          <span>发布</span>
-          <svg-icon id="release" icon-class="release"></svg-icon>
-        </div>
+        </transition-group>
       </form>
       <div class="list-box">
         <ul>
@@ -103,14 +115,18 @@
               </div>
               <div class="comment-content">
                 <!-- 引用回复 -->
-                <!-- <div class="reply-box">
+                <div class="reply-box" v-if="!!comment.replyId">
                   <div class="reply-name">
-                    <a href>熊二</a>
+                    <a href>
+                      <strong
+                        v-if="foundReplyParent(comment.replyId)"
+                      >{{foundReplyParent(comment.replyId)}}</strong>
+                    </a>
                   </div>
                   <div class="reply-content">
-                    <p>技术比人情更可靠，你所学习的技术知识，积累的那些细节和经验，百分之一百日后可以给你带来令你欣喜的价值，而且这个价值连绵不绝，持续不断，越筑越高。因为技术不像人，技术不会欺骗你，而且越基础的技术越忠诚。</p>
+                    <p>{{foundReplyContent(comment.replyId)}}</p>
                   </div>
-                </div>-->
+                </div>
                 <p>{{comment.content}}</p>
               </div>
               <div class="comment-footer">
@@ -118,7 +134,7 @@
                   <svg-icon id="like" icon-class="like"></svg-icon>
                   <span>顶 (0)</span>
                 </a>
-                <a href="#" class="reply">
+                <a href class="reply" @click.stop.prevent="replyComment(comment)">
                   <svg-icon id="reply" icon-class="reply"></svg-icon>
                   <span>回复</span>
                 </a>
@@ -134,6 +150,7 @@
 <script>
 import moment from "moment";
 moment.locale("zh-CN");
+import { scrollTo } from "../../utils/scroll";
 export default {
   name: "article-detail",
   data() {
@@ -142,10 +159,17 @@ export default {
       article: "", //文章内容
       commentList: [], //文章评论列表
       // 文章评论参数
-      content: "",
       nickname: "",
       email: "",
-      site: ""
+      site: "",
+      // 评论相关
+      replyId: 0, //引用回复评论id
+      activeComment: 0,
+      // 编辑器相关
+      comentContentHtml: "",
+      comentContentText: "",
+      previewContent: "",
+      previewMode: false
     };
   },
   created() {
@@ -154,6 +178,16 @@ export default {
     this.getComment();
   },
   methods: {
+    // 清空输入表单
+    initComment() {
+      this.replyId = 0;
+      this.nickname = "";
+      this.email = "";
+      this.site = "";
+      this.comentContentHtml = "";
+      this.$refs.markdown.innerHTML = this.comentContentHtml;
+    },
+    // 查找文章内容
     searchArticle() {
       axios
         .get(`/api/v1/articles/${this.articleId}`, {
@@ -167,6 +201,7 @@ export default {
           }
         });
     },
+    // 获取评论列表
     getComment() {
       axios.get(`/api/v1/comment/${this.articleId}`).then(res => {
         if (res.status == 200) {
@@ -179,8 +214,9 @@ export default {
         }
       });
     },
+    // 提交评论
     submitComment() {
-      if (!this.content) {
+      if (!this.comentContentText) {
         return;
       }
       if (!this.nickname) {
@@ -191,22 +227,87 @@ export default {
       }
       let params = {
         articleId: this.articleId,
+        replyId: this.replyId,
         // 评论参数
-        content: this.content,
+        content: this.comentContentText,
         nickname: this.nickname,
         email: this.email,
         site: this.site
       };
-
       axios
         .post(`/api/v1/comment`, params)
         .then(res => {
           const data = res;
           if (res.status == 200) {
             this.getComment();
+            this.initComment();
           }
         })
         .catch(err => {});
+    },
+    // 跳转到某条指定的id位置
+    toSomeAnchorById(id) {
+      const targetDom = document.getElementById(id);
+      if (targetDom) {
+        let isToEditor = Object.is(id, "post-box");
+        let isCommentBox = Object.is(id, "comment-box");
+        scrollTo(targetDom, 500, {
+          offset: isToEditor ? 0 : isCommentBox ? -70 : -300
+        });
+        if (isToEditor) {
+          let p = this.$refs.markdown;
+          let s = window.getSelection();
+          let r = document.createRange();
+          r.setStart(p, p.childElementCount);
+          r.setEnd(p, p.childElementCount);
+          s.removeAllRanges();
+          s.addRange(r);
+        } else {
+          this.activeComment = id;
+        }
+      }
+    },
+    // 回复评论
+    replyComment(comment) {
+      this.replyId = comment.id;
+      this.toSomeAnchorById("post-box");
+    },
+    cancelReply() {
+      this.replyId = 0;
+    },
+    // 找到回复来源
+    // 查找回复来源昵称
+    foundReplyParent(replyId) {
+      let parent = this.commentList.find(comment =>
+        Object.is(comment.id, replyId)
+      );
+      return parent ? parent.nickname : null;
+    },
+    foundReplyContent(replyId) {
+      let comment = this.commentList.find(comment =>
+        Object.is(comment.id, replyId)
+      );
+      return comment ? comment.content : null;
+    },
+    // 编辑器相关
+    commentContentChange() {
+      const html = this.$refs.markdown.innerHTML;
+      const text = this.$refs.markdown.innerText;
+      if (!Object.is(html, this.comentContentHtml)) {
+        this.comentContentHtml = html;
+      }
+      if (!Object.is(text, this.comentContentText)) {
+        this.comentContentText = text;
+      }
+    }
+  },
+  computed: {
+    // 获取引用回复评论
+    replyCommentSelf() {
+      let replyComment = this.commentList.find(comment =>
+        Object.is(comment.id, this.replyId)
+      );
+      return replyComment;
     }
   }
 };
@@ -240,6 +341,9 @@ export default {
   font-size: 16px;
   color: #555;
 }
+.comment .count .num {
+  font-weight: bold;
+}
 /* 评论模块样式 */
 .comment .avatar {
   width: 36px;
@@ -254,15 +358,17 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-
-.comment .edit-box .comment-box {
+.comment .edit-box .markdown {
+  margin-bottom: 0.4rem;
+}
+.comment .edit-box .markdown .markdown-editor {
   min-height: 6em;
   max-height: 30em;
   line-height: 1.8em;
   position: relative;
   overflow: auto;
 }
-.comment .edit-box .comment-box textarea {
+.comment .edit-box .markdown .markdown-editor {
   width: 100%;
   resize: none;
   outline: none;
@@ -273,11 +379,15 @@ export default {
   border-radius: 6px;
   box-sizing: border-box;
 }
-.comment .edit-box .comment-box textarea:hover {
+.comment .edit-box .markdown .markdown-editor:hover {
   border-color: #333;
 }
-.comment .edit-box .comment-box textarea:focus {
+.comment .edit-box .markdown .markdown-editor:focus {
   border-color: #555;
+}
+.comment .edit-box .markdown .markdown-editor:empty::before {
+  content: attr(placeholder);
+  color: rgb(179, 179, 179);
 }
 .comment .editor {
   flex-grow: 1;
@@ -301,6 +411,9 @@ export default {
 }
 .will-reply .reply-user a {
   color: rgb(102, 102, 102);
+}
+.will-reply .reply-user a:hover {
+  color: #d06f67;
 }
 .will-reply .reply-preview {
   max-height: 10em;
@@ -330,9 +443,6 @@ export default {
 }
 .comment .user-info > div > input:hover {
   border-color: #333;
-}
-.comment .user-info > div > input:focus {
-  border-color: orange;
 }
 .comment .submit {
   width: 56px;
