@@ -28,11 +28,10 @@ export default {};
   bottom: 0; */
 }
 .footer ul {
-  width: 45rem;
-  margin: 0 auto;
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  padding-right: 5rem;
 }
 .footer ul li {
   padding-right: 2rem;

@@ -100,7 +100,16 @@
       </form>
       <div class="list-box">
         <ul>
-          <li v-for="(comment,index) in commentList" :key="index" class="comment-item">
+          <li
+            v-for="(comment,index) in commentList"
+            :key="index"
+            class="comment-item"
+            :id="`comment-item-${comment.id}`"
+            :class="{
+            'comment-item': true,
+            'active': `comment-item-${comment.id}` === activeComment
+          }"
+          >
             <div class="comment-avatar">
               <a target="_blank" :href="comment.site">
                 <img src="../assets/img/avatar.jpg" alt />
@@ -117,7 +126,10 @@
                 <!-- 引用回复 -->
                 <div class="reply-box" v-if="!!comment.replyId">
                   <div class="reply-name">
-                    <a href>
+                    <a
+                      href
+                      @click.stop.prevent="toSomeAnchorById(`comment-item-${comment.replyId}`)"
+                    >
                       <strong
                         v-if="foundReplyParent(comment.replyId)"
                       >{{foundReplyParent(comment.replyId)}}</strong>
@@ -130,9 +142,14 @@
                 <p>{{comment.content}}</p>
               </div>
               <div class="comment-footer">
-                <a href="#" class="like">
+                <a
+                  href
+                  class="like"
+                  :class="{liked:commentLinked(comment.id)}"
+                  @click.stop.prevent="likeComment(comment)"
+                >
                   <svg-icon id="like" icon-class="like"></svg-icon>
-                  <span>顶 (0)</span>
+                  <span>顶 ({{comment.likes}})</span>
                 </a>
                 <a href class="reply" @click.stop.prevent="replyComment(comment)">
                   <svg-icon id="reply" icon-class="reply"></svg-icon>
@@ -164,12 +181,14 @@ export default {
       site: "",
       // 评论相关
       replyId: 0, //引用回复评论id
-      activeComment: 0,
+      activeComment: 0, //找到原始评论
       // 编辑器相关
       comentContentHtml: "",
       comentContentText: "",
       previewContent: "",
-      previewMode: false
+      previewMode: false,
+      // 用户历史数据
+      likeComments: []
     };
   },
   created() {
@@ -177,7 +196,17 @@ export default {
     this.searchArticle();
     this.getComment();
   },
+  mounted() {
+    this.initUser();
+  },
   methods: {
+    // 初始化本地用户数据即点赞历史
+    initUser() {
+      let likeComments = localStorage.getItem("like_comments");
+      if (likeComments) {
+        this.likeComments = JSON.parse(likeComments);
+      }
+    },
     // 清空输入表单
     initComment() {
       this.replyId = 0;
@@ -252,7 +281,7 @@ export default {
         let isToEditor = Object.is(id, "post-box");
         let isCommentBox = Object.is(id, "comment-box");
         scrollTo(targetDom, 500, {
-          offset: isToEditor ? 0 : isCommentBox ? -70 : -300
+          offset: isToEditor ? 0 : isCommentBox ? -70 : 0
         });
         if (isToEditor) {
           let p = this.$refs.markdown;
@@ -283,11 +312,37 @@ export default {
       );
       return parent ? parent.nickname : null;
     },
+    // 查找回复来源内容
     foundReplyContent(replyId) {
       let comment = this.commentList.find(comment =>
         Object.is(comment.id, replyId)
       );
       return comment ? comment.content : null;
+    },
+    // 点赞评论
+    likeComment(comment) {
+      if (this.commentLinked(comment.id)) return false;
+      let params = {
+        commentId: comment.id
+      };
+      axios
+        .post(`/api/v1/comment/likeComment`, params)
+        .then(res => {
+          const data = res;
+          if (res.status == 200) {
+            this.likeComments.push(comment.id);
+            localStorage.setItem(
+              "like_comments",
+              JSON.stringify(this.likeComments)
+            );
+            this.getComment();
+          }
+        })
+        .catch(err => {});
+    },
+    // 获取某条评论是否被点赞
+    commentLinked(commentId) {
+      return this.likeComments.includes(commentId);
     },
     // 编辑器相关
     commentContentChange() {
@@ -482,6 +537,9 @@ export default {
   justify-content: space-between;
   position: relative;
 }
+.comment-item.active {
+  border: 1px dashed #ca5c54;
+}
 .comment-item .comment-avatar {
   width: 36px;
   height: 36px;
@@ -495,7 +553,7 @@ export default {
 }
 .comment-item .comment-body {
   width: 100%;
-  /* padding: 8px; */
+  padding: 8px;
 }
 .comment-body .comment-header {
   display: flex;
@@ -544,12 +602,12 @@ export default {
   color: rgb(102, 102, 102);
 }
 .comment-body .comment-footer > a span {
-  margin-left: 6px;
-}
-.comment-body .comment-footer > a.like {
-  margin-right: 12px;
+  margin: 0 6px;
 }
 .comment-body .comment-footer > a.like:hover {
+  color: #d06f67;
+}
+.comment-body .comment-footer > a.like.liked {
   color: #d06f67;
 }
 .comment-body .comment-footer > a.reply {

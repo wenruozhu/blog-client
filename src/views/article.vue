@@ -55,12 +55,6 @@ export default {
         })
         .catch(err => {});
     }
-    /* readArticle(articleId) {
-      this.$router.push({
-        name: "article_detail",
-        query: { articleId: articleId }
-      });
-    } */
   }
 };
 </script>
