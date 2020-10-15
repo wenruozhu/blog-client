@@ -8,7 +8,7 @@
       </nav>
     </div>
     <div class="mobile-header">
-      <span class="menu">
+      <span class="menu" @click.stop.prevent="openSidebar">
         <svg-icon id="menu" icon-class="menu"></svg-icon>
       </span>
       <h6>文若</h6>
@@ -28,11 +28,23 @@ export default {
         { path: "/wall", name: "留言墙" }
       ]
     };
+  },
+  methods: {
+    openSidebar() {
+      this.$emit("sideState", true);
+    }
   }
 };
 </script>
 
 <style>
+.header {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+}
 /* PC端样式 */
 .pc-header {
   display: flex;
@@ -60,20 +72,20 @@ export default {
   .pc-header {
     display: block;
   }
+  .mobile-header {
+    display: none;
+  }
 }
 /* 移动端样式 */
 .mobile-header {
-  width: 100%;
   height: 3.5rem;
   line-height: 3.5rem;
   padding: 0 1rem;
-  position: fixed;
-  top: 0;
-  left: 0;
+  box-sizing: border-box;
   text-align: center;
-  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-.mobile-header .menu{
+.mobile-header .menu {
   position: absolute;
   top: 0;
   left: 1rem;
@@ -81,7 +93,7 @@ export default {
   margin: auto;
   font-size: 1.2rem;
 }
-.mobile-header h6{
+.mobile-header h6 {
   font-size: 1.3rem;
 }
 @media (max-width: 852px) {

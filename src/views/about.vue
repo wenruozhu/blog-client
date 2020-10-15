@@ -1,5 +1,5 @@
 <template>
-  <div class="me">
+  <div class="about">
     <h6>关于我</h6>
     <p>欢迎你来！我是文若。以下是我个人的一些简单信息：</p>
     <ul>
@@ -52,21 +52,21 @@ export default {};
 </script>
 
 <style>
-.me {
+.about {
   width: 60%;
-  margin: 20px auto;
+  margin: 0 auto;
 }
 
-.me > h6 {
+.about > h6 {
   font-size: 1.3rem;
   color: #000;
 }
-.me > p {
+.about > p {
   margin: 1rem 0;
   text-indent: 1em;
   font-size: 1.1rem;
 }
-.me ul > li {
+.about ul > li {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -74,7 +74,7 @@ export default {};
   margin-bottom: 1rem;
   color: #666;
 }
-.me ul li span {
+.about ul li span {
   white-space: nowrap;
   font-weight: bold;
   color: #000;

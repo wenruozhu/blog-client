@@ -145,7 +145,7 @@ export default {
 
 <style>
 .wall {
-  width: 45rem;
+  /* width: 45rem; */
   margin: 0 auto;
 }
 .wall .head {
