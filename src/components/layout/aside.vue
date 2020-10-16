@@ -28,11 +28,6 @@ export default {
       default: false
     }
   },
-  watch: {
-    mobileSideState() {
-      console.log(this.mobileSideState);
-    }
-  },
   methods: {
     openSidebar() {
       this.$emit("sideState", false);
@@ -41,11 +36,11 @@ export default {
 };
 </script>
 <style scoped>
-@media (min-width: 852px) {
+/* @media (min-width: 852px) {
   .app-aside {
     display: none;
   }
-}
+} */
 @media (max-width: 852px) {
   .app-aside {
     display: block;

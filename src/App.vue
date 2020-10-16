@@ -30,7 +30,6 @@ export default {
   },
   methods: {
     changeSideState(boolean) {
-      console.log(boolean)
       this.mobileSideState = boolean;
     }
   }

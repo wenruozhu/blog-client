@@ -11,7 +11,9 @@
       <span class="menu" @click.stop.prevent="openSidebar">
         <svg-icon id="menu" icon-class="menu"></svg-icon>
       </span>
-      <h6>文若</h6>
+      <h6>
+        <router-link to="/">文若</router-link>
+      </h6>
     </div>
   </div>
 </template>
@@ -43,6 +45,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 1;
   background-color: #fff;
 }
 /* PC端样式 */
@@ -95,6 +98,9 @@ export default {
 }
 .mobile-header h6 {
   font-size: 1.3rem;
+}
+.mobile-header h6 a{
+  color: #000;
 }
 @media (max-width: 852px) {
   .pc-header {

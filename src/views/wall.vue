@@ -4,13 +4,7 @@
       <a @click="dialogState = true" href="javascript:;">我要上墙</a>
     </div>
     <div class="message-list">
-      <!-- <transition-group tag="ul" name="slide-down">
-        <li class="message" v-for="(message,index) in messageList" :key="index">
-          <p class="time">{{message.publishTime}}</p>
-          <p class="content">{{message.message}}</p>
-          <span class="name">{{message.name}}</span>
-        </li>
-      </transition-group>-->
+      <!-- PC端 -->
       <transition-group tag="div" class="columns" name="slide-down">
         <div class="column" :key="1">
           <div class="message" v-for="(message,index) in list0" :key="index">
@@ -34,10 +28,22 @@
           </div>
         </div>
       </transition-group>
+      <!-- 移动端 -->
+      <div class="mobile-columns">
+        <transition name="slide-down">
+          <div class="column" v-for="(message,index) in messageList" :key="index">
+            <div class="message">
+              <p class="time">{{message.publishTime}}</p>
+              <p class="content">{{message.message}}</p>
+              <span class="name">{{message.name}}</span>
+            </div>
+          </div>
+        </transition>
+      </div>
     </div>
     <!-- <div class="load-more">
       <a href="javascript:;">加载更多</a>
-    </div> -->
+    </div>-->
     <transition name="slide-down">
       <div class="dialog" v-show="dialogState">
         <div class="dialog-head">
@@ -145,7 +151,7 @@ export default {
 
 <style>
 .wall {
-  /* width: 45rem; */
+  width: 45rem;
   margin: 0 auto;
 }
 .wall .head {
@@ -166,6 +172,15 @@ export default {
   text-decoration: underline;
   border-radius: 0.3rem;
 }
+/* PC端样式 */
+@media (min-width: 852px) {
+  .message-list .columns {
+    display: block;
+  }
+  .message-list .mobile-columns {
+    display: none;
+  }
+}
 .message-list .columns {
   display: flex;
   justify-content: space-between;
@@ -175,6 +190,23 @@ export default {
 }
 .message-list .column:nth-of-type(2n) {
   margin: 0 1rem;
+}
+
+/* 移动端样式 */
+@media (max-width: 852px) {
+  .wall {
+    width: auto;
+  }
+  .message-list .columns {
+    display: none;
+  }
+  .message-list .mobile-columns {
+    display: block;
+  }
+}
+.message-list .mobile-columns {
+  padding: 1rem;
+  margin-bottom: 1rem;
 }
 .message {
   position: relative;
@@ -299,6 +331,18 @@ export default {
 }
 .dialog-footer button:hover {
   border-color: #24292e;
+}
+@media (max-width: 852px) {
+  .dialog {
+    width: 88%;
+  }
+  .dialog-content .dialog-item {
+    margin: 0.8rem 0;
+  }
+  .dialog-footer button{
+    margin-left: 1.5rem;
+    margin-right: 0;
+  }
 }
 .mask {
   position: fixed;

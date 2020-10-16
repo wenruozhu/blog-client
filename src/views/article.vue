@@ -82,7 +82,7 @@ export default {
   }
 }
 .article .article-pc {
-  width: 60%;
+  width: 45rem;
   margin: 0 auto;
 }
 .article ul li {

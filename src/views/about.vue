@@ -44,16 +44,29 @@
         <span>数据库：</span> Mysql
       </li>
     </ul>
+    <comment :articleId="articleId"></comment>
   </div>
 </template>
 
 <script>
-export default {};
+import comment from "@/components/common/comment";
+export default {
+  name: "about",
+  data() {
+    return {
+      articleId: 0 //关于我页面默认文章id为0
+    };
+  },
+  components: {
+    comment
+  },
+};
 </script>
 
 <style>
+/* PC端样式 */
 .about {
-  width: 60%;
+  width: 45rem;
   margin: 0 auto;
 }
 
@@ -78,5 +91,11 @@ export default {};
   white-space: nowrap;
   font-weight: bold;
   color: #000;
+}
+@media (max-width: 852px) {
+  .about {
+    width: auto;
+    padding: 1rem;
+  }
 }
 </style>
