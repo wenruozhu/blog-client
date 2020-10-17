@@ -30,8 +30,8 @@
       </transition-group>
       <!-- 移动端 -->
       <div class="mobile-columns">
-        <transition name="slide-down">
-          <div class="column" v-for="(message,index) in messageList" :key="index">
+        <transition name="slide-down" v-for="(message,index) in messageList">
+          <div class="column">
             <div class="message">
               <p class="time">{{message.publishTime}}</p>
               <p class="content">{{message.message}}</p>
@@ -41,9 +41,7 @@
         </transition>
       </div>
     </div>
-    <!-- <div class="load-more">
-      <a href="javascript:;">加载更多</a>
-    </div>-->
+    <div class="load-more" v-if="!loadState" @click="getMoreMessage">{{loading ? "加载中" : "加载更多"}}</div>
     <transition name="slide-down">
       <div class="dialog" v-show="dialogState">
         <div class="dialog-head">
@@ -91,7 +89,10 @@ export default {
       name: "", //留言称呼
       message: "", //留言内容
       dialogState: false, //对话框状态
-      messageList: [] //获取留言列表
+      pageIndex: 1, //留言页数
+      messageList: [], //获取留言列表
+      loading: false, //加载状态
+      loadState: false //数据是否加载完
     };
   },
   created() {
@@ -100,15 +101,20 @@ export default {
 
   methods: {
     getMessage() {
+      this.loading = true;
       axios
-        .get(`/api/v1/message`)
+        .get(`/api/v1/message/${this.pageIndex}`)
         .then(res => {
           for (const message of res.data) {
             message.publishTime = moment(message.publishTime).format(
               "YYYY.MM.DD HH:MM"
             );
           }
-          this.messageList = res.data;
+          if (res.data.length === 0) {
+            this.loadState = true;
+          }
+          this.messageList = this.messageList.concat(res.data);
+          this.loading = false;
         })
         .catch(err => {
           console.log(err);
@@ -133,6 +139,13 @@ export default {
           }
         })
         .catch(err => {});
+    },
+    getMoreMessage() {
+      if (this.loading) {
+        return;
+      }
+      this.pageIndex += 1;
+      this.getMessage();
     }
   },
   computed: {
@@ -149,7 +162,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .wall {
   width: 45rem;
   margin: 0 auto;
@@ -172,15 +185,7 @@ export default {
   text-decoration: underline;
   border-radius: 0.3rem;
 }
-/* PC端样式 */
-@media (min-width: 852px) {
-  .message-list .columns {
-    display: block;
-  }
-  .message-list .mobile-columns {
-    display: none;
-  }
-}
+
 .message-list .columns {
   display: flex;
   justify-content: space-between;
@@ -191,22 +196,18 @@ export default {
 .message-list .column:nth-of-type(2n) {
   margin: 0 1rem;
 }
-
-/* 移动端样式 */
-@media (max-width: 852px) {
-  .wall {
-    width: auto;
-  }
+/* PC端样式 */
+@media (min-width: 852px) {
   .message-list .columns {
-    display: none;
+    display: flex;
   }
   .message-list .mobile-columns {
-    display: block;
+    display: none;
   }
 }
+
 .message-list .mobile-columns {
-  padding: 1rem;
-  margin-bottom: 1rem;
+  padding: 0 1rem;
 }
 .message {
   position: relative;
@@ -252,17 +253,15 @@ export default {
 .load-more {
   margin-top: 1rem;
   padding: 1.2rem;
-  color: #24292e;
   text-align: center;
+  font-size: 1rem;
+  color: rgb(36, 41, 46);
+  cursor: pointer;
 }
 .load-more:hover {
   background: rgba(158, 169, 179, 0.12);
 }
-.load-more a {
-  display: block;
-  font-size: 1rem;
-  color: rgb(36, 41, 46);
-}
+
 .dialog {
   width: 34rem;
   padding: 1rem;
@@ -332,14 +331,31 @@ export default {
 .dialog-footer button:hover {
   border-color: #24292e;
 }
+/* 移动端样式 */
 @media (max-width: 852px) {
+  .wall {
+    width: auto;
+  }
+  .message-list .columns {
+    display: none;
+  }
+  .message-list .mobile-columns {
+    display: block;
+  }
+  .message-list .column:nth-of-type(2n) {
+    margin: 0;
+  }
+  .load-more {
+    margin: 1rem;
+  }
   .dialog {
     width: 88%;
+    padding: 1rem 1rem 1rem 0;
   }
   .dialog-content .dialog-item {
     margin: 0.8rem 0;
   }
-  .dialog-footer button{
+  .dialog-footer button {
     margin-left: 1.5rem;
     margin-right: 0;
   }
