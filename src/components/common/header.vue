@@ -71,6 +71,9 @@ export default {
 .nav-item a.router-link-exact-active {
   color: rgb(36, 41, 46);
 }
+.nav-item a:hover{
+  color: rgb(36, 41, 46);
+}
 @media (min-width: 852px) {
   .pc-header {
     display: block;

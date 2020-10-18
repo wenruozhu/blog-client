@@ -3,7 +3,7 @@
     <mobileAside @sideState="changeSideState" :mobileSideState="mobileSideState"></mobileAside>
     <div class="app-main" :class="{'open': mobileSideState}">
       <my-header @sideState="changeSideState"></my-header>
-      <div class="content">
+      <div class="app-container">
         <router-view />
       </div>
       <my-footer></my-footer>
@@ -36,16 +36,16 @@ export default {
 };
 </script>
 <style scoped>
-#app{
+#app {
   overflow-x: hidden;
 }
-.app-main{
+.app-main {
   overflow: hidden;
 }
 .app-main.open {
   transform: translateX(60%);
 }
-.content {
+.app-container {
   width: 100%;
   padding-top: 4.5rem;
 }

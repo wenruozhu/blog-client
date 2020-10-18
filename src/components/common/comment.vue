@@ -171,7 +171,6 @@ export default {
     };
   },
   created() {
-    console.log(this.articleId)
     this.getComment();
   },
   mounted() {
