@@ -30,7 +30,7 @@
       </transition-group>
       <!-- 移动端 -->
       <div class="mobile-columns">
-        <transition name="slide-down" v-for="(message,index) in messageList">
+        <transition name="slide-down" v-for="(message,index) in messageList" :key="index">
           <div class="column">
             <div class="message">
               <p class="time">{{message.publishTime}}</p>

@@ -6,12 +6,12 @@
     <div class="meta">
       <span class="time">{{article.publishTime}}</span>
       <span class="num">字数 {{String(article.content).length}}</span>
-      <span class="view">喜欢 13</span>
-      <span class="comment">评论 0</span>
-      <span class="count"></span>
+      <!-- <span class="view">喜欢 13</span> -->
+      <span class="comment">评论 {{count}}</span>
+      <!-- <span class="count"></span> -->
     </div>
-    <div class="content" v-html="article.content"></div>
-    <comment :articleId="articleId"></comment>
+    <div class="content" v-html="articleContent"></div>
+    <comment :articleId="articleId" @commentCount="commentCount"></comment>
   </div>
 </template>
 
@@ -19,12 +19,14 @@
 import moment from "moment";
 moment.locale("zh-CN");
 import comment from "@/components/common/comment";
+import markdown from "../../plugins/marked";
 export default {
   name: "article-detail",
   data() {
     return {
       articleId: "", //文章id
-      article: "" //文章内容
+      article: "", //文章内容
+      count: 0 //评论数
     };
   },
   created() {
@@ -52,6 +54,14 @@ export default {
             this.article = article;
           }
         });
+    },
+    commentCount(count) {
+      this.count = count;
+    }
+  },
+  computed: {
+    articleContent() {
+      return markdown(this.article.content).html;
     }
   }
 };
@@ -122,8 +132,67 @@ export default {
   padding: 0.5rem;
   list-style-type: disc;
 }
-.article_detail .content a{
+.article_detail .content a {
   color: #75bfd7;
+}
+.article_detail .content pre {
+  position: relative;
+  padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+  margin: 1rem 0;
+  overflow: auto;
+  border-radius: 0.35rem;
+  font-size: 16px;
+  line-height: 1.375;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  tab-size: 4;
+  background: #f6f8fa;
+  /* background-color: #252526; */
+  color: #728fcb;
+}
+.article_detail .content pre::after {
+  content: " ";
+  position: absolute;
+  border-radius: 50%;
+  background: #ff5f56;
+  width: 12px;
+  height: 12px;
+  top: 0;
+  left: 1.5rem;
+  margin-top: 12px;
+  -webkit-box-shadow: 20px 0 #ffbd2e, 40px 0 #27c93f;
+  box-shadow: 20px 0 #ffbd2e, 40px 0 #27c93f;
+  z-index: 3;
+}
+.article_detail .content pre code {
+  letter-spacing: 0.3px;
+  /* font-family: -apple-system, BlinkMacSystemFont, PingFang SC, Hiragino Sans GB,
+    sans-serif; */
+  font-weight: 500;
+}
+pre code .keyword {
+  color: #c678dd;
+}
+pre code .number {
+  color: #d19a66;
+}
+pre code .attr {
+  color: #e06c75;
+}
+pre code .title {
+  color: #61afef;
+}
+pre code .built_in {
+  color: #56b6c2;
+}
+pre code .comment {
+  color: #5c6370;
+}
+pre code .params {
+  color: #be5046;
 }
 /* 文章详情移动端样式 */
 @media (max-width: 852px) {

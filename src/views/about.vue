@@ -71,19 +71,16 @@ export default {
 }
 
 .about > h6 {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: #000;
 }
 .about > p {
   margin: 1rem 0;
-  text-indent: 1em;
-  font-size: 1.1rem;
 }
 .about ul > li {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  padding-left: 2em;
   margin-bottom: 1rem;
   color: #666;
 }

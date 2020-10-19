@@ -27,17 +27,6 @@
               </div>
               <div class="reply-preview">{{replyCommentSelf.content}}</div>
             </div>
-            <!-- <div class="comment-box" key="2">
-                <textarea
-                  name="comment"
-                  placeholder="记得留下您的昵称和邮箱,可以快速收到回复..."
-                  cols="3"
-                  rows="5"
-                  ref="markdown"
-                  maxlength="200"
-                  v-model="content"
-                ></textarea>
-            </div>-->
             <div class="markdown" key="2">
               <div
                 class="markdown-editor"
@@ -59,7 +48,9 @@
               placeholder="昵称 （必填）"
               v-model="nickname"
               maxlength="10"
+              @blur="!!nickname ? nicknameTip = false : nicknameTip = true"
             />
+            <span v-if="nicknameTip">请输入昵称</span>
           </div>
           <div class="email">
             <input
@@ -68,7 +59,9 @@
               placeholder="邮箱 （必填，不会公开）"
               v-model="email"
               maxlength="20"
+              @blur="checkEmail"
             />
+            <span v-if="emailTip">{{emailErrCode == 1 ? '请输入邮箱' : '请输入正确的邮箱'}}</span>
           </div>
           <div class="site">
             <input
@@ -77,7 +70,9 @@
               placeholder="网站 （https://非必填）"
               v-model="site"
               maxlength="20"
+              @blur="checkSite"
             />
+            <span v-if="siteTip">请输入正确的网址</span>
           </div>
         </div>
         <div class="submit" :key="2" @click="submitComment">
@@ -161,13 +156,20 @@ export default {
       // 评论相关
       replyId: 0, //引用回复评论id
       activeComment: 0, //找到原始评论
+      nicknameTip: false, //提示信息
+      emailTip: false, //提示信息
+      siteTip: false, //提示信息
+      emailErrCode: 1, //提示信息 1 => 未输入邮箱 2 => 输入邮箱不合法
       // 编辑器相关
       comentContentHtml: "",
-      comentContentText: "",
       previewContent: "",
       previewMode: false,
       // 用户历史数据
-      likeComments: []
+      likeComments: [],
+      regexp: {
+        email: /\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/,
+        url: /^[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"\"])*$/
+      }
     };
   },
   created() {
@@ -204,12 +206,38 @@ export default {
             );
           }
           this.commentList = res.data;
+          this.$emit("commentCount", this.commentList.length);
         }
       });
     },
+    // 校验用户输入的表单
+    checkEmail() {
+      //邮箱不为空
+      if (!!this.email) {
+        let boolean = this.regexp.email.test(this.email);
+        boolean
+          ? (this.emailTip = false)
+          : ((this.emailTip = true), (this.emailErrCode = 2));
+      } else {
+        this.emailTip = true;
+        this.emailErrCode = 1;
+      }
+    },
+    checkSite() {
+      if (this.site.length === 0) {
+        this.siteTip = false;
+        return;
+      }
+
+      if (!this.regexp.url.test(this.site)) {
+        this.siteTip = true;
+      } else {
+        this.siteTip = false;
+      }
+    },
     // 提交评论
     submitComment() {
-      if (!this.comentContentText) {
+      if (!this.comentContentHtml) {
         return;
       }
       if (!this.nickname) {
@@ -222,7 +250,7 @@ export default {
         articleId: this.articleId,
         replyId: this.replyId,
         // 评论参数
-        content: this.comentContentText,
+        content: this.comentContentHtml,
         nickname: this.nickname,
         email: this.email,
         site: this.site
@@ -311,12 +339,8 @@ export default {
     // 编辑器相关
     commentContentChange() {
       const html = this.$refs.markdown.innerHTML;
-      const text = this.$refs.markdown.innerText;
       if (!Object.is(html, this.comentContentHtml)) {
         this.comentContentHtml = html;
-      }
-      if (!Object.is(text, this.comentContentText)) {
-        this.comentContentText = text;
       }
     }
   },
@@ -404,7 +428,7 @@ export default {
     padding-left: 0;
   }
   .comment div .user-info div:nth-of-type(2n) {
-    margin: 0.8rem 0;
+    margin: 1.6rem 0;
   }
 
   .comment .list-box ul li {
@@ -454,6 +478,19 @@ export default {
 }
 .comment .user-info > div {
   flex: 1;
+}
+.comment div .user-info div {
+  position: relative;
+}
+.comment div .user-info div span {
+  line-height: 1;
+  padding-top: 0.3rem;
+  padding-left: 6px;
+  font-size: 12px;
+  color: #f56c6c;
+  position: absolute;
+  top: 100%;
+  left: 0;
 }
 .comment .user-info > div:nth-of-type(2n) {
   margin: 0 10px;
