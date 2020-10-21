@@ -62,8 +62,9 @@
                 rows="10"
                 maxlength="200"
                 v-model="message"
-                placeholder="曾经有一个 BUG 摆在我的面前......（必填）"
+                placeholder="来都来了，不说点什么就走？😁"
               ></textarea>
+              <!-- 曾经有一个 BUG 摆在我的面前......（必填） -->
             </div>
           </form>
         </div>
@@ -307,6 +308,7 @@ export default {
 }
 .dialog .content > textarea {
   width: calc(100% - 80px);
+  line-height: 1.5;
   resize: none;
   padding: 0.3rem 0.5rem;
   border: 1px solid #eee;

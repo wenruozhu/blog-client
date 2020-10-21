@@ -35,20 +35,49 @@
                 placeholder="记得留下您的昵称和邮箱,可以快速收到回复..."
                 @keyup="commentContentChange($event)"
               ></div>
+              <div class="emoji-icon" @click="emojiState = !emojiState">
+                <svg-icon id="emoji" icon-class="emoji"></svg-icon>
+              </div>
+              <transition name="fade">
+                <div class="emoji-box" v-if="emojiState">
+                  <ul class="emoji-list">
+                    <li class="item" @click="insertEmoji('😃')">😃</li>
+                    <li class="item" @click="insertEmoji('😂')">😂</li>
+                    <li class="item" @click="insertEmoji('😅')">😅</li>
+                    <li class="item" @click="insertEmoji('😉')">😉</li>
+                    <li class="item" @click="insertEmoji('😌')">😌</li>
+                    <li class="item" @click="insertEmoji('😔')">😔</li>
+                    <li class="item" @click="insertEmoji('😓')">😓</li>
+                    <li class="item" @click="insertEmoji('😘')">😘</li>
+                    <li class="item" @click="insertEmoji('😡')">😡</li>
+                    <li class="item" @click="insertEmoji('😭')">😭</li>
+                    <li class="item" @click="insertEmoji('😱')">😱</li>
+                    <li class="item" @click="insertEmoji('😳')">😳</li>
+                    <li class="item" @click="insertEmoji('😵')">😵</li>
+                    <li class="item" @click="insertEmoji('🌚')">🌚</li>
+                    <li class="item" @click="insertEmoji('👍')">👍</li>
+                    <li class="item" @click="insertEmoji('👎')">👎</li>
+                    <li class="item" @click="insertEmoji('💪')">💪</li>
+                    <li class="item" @click="insertEmoji('🌹')">🌹</li>
+                    <li class="item" @click="insertEmoji('🇨🇳')">🇨🇳</li>
+                    <li class="item" @click="insertEmoji('🇺🇸')">🇺🇸</li>
+                  </ul>
+                </div>
+              </transition>
             </div>
           </transition-group>
         </div>
       </div>
       <transition-group tag="div" name="list">
-        <div class="user-info" :key="1">
+        <div class="user-info" v-if="!userCacheMode || userCacheEditing" :key="1">
           <div class="name">
             <input
               type="text"
               name="nickname"
               placeholder="昵称 （必填）"
-              v-model="nickname"
+              v-model="user.nickname"
               maxlength="10"
-              @blur="!!nickname ? nicknameTip = false : nicknameTip = true"
+              @blur="!!user.nickname ? nicknameTip = false : nicknameTip = true"
             />
             <span v-if="nicknameTip">请输入昵称</span>
           </div>
@@ -57,7 +86,7 @@
               type="text"
               name="email"
               placeholder="邮箱 （必填，不会公开）"
-              v-model="email"
+              v-model="user.email"
               maxlength="20"
               @blur="checkEmail"
             />
@@ -68,14 +97,30 @@
               type="text"
               name="site"
               placeholder="网站 （https://非必填）"
-              v-model="site"
-              maxlength="20"
+              v-model="user.site"
+              maxlength="32"
               @blur="checkSite"
             />
             <span v-if="siteTip">请输入正确的网址</span>
           </div>
+          <div class="save" v-if="userCacheMode" @click="updateUserCache">
+            <svg-icon id="save" icon-class="save"></svg-icon>
+          </div>
         </div>
-        <div class="submit" :key="2" @click="submitComment">
+        <div class="cache-user" v-else-if="userCacheMode && !userCacheEditing" :key="2">
+          <div class="edit">
+            <strong class="nickname">{{user.nickname}}</strong>
+            <a class="setting">
+              <svg-icon id="config" icon-class="config"></svg-icon>
+              <span>账户设置</span>
+              <ul>
+                <li @click="userCacheEditing = true">编辑信息</li>
+                <li @click="clearUserCache">清空信息</li>
+              </ul>
+            </a>
+          </div>
+        </div>
+        <div class="submit" :key="3" @click="submitComment">
           <span>发布</span>
           <svg-icon id="release" icon-class="release"></svg-icon>
         </div>
@@ -96,7 +141,7 @@
           <div class="comment-body">
             <div class="comment-header">
               <a target="_blank" class="comment-user-info" :href="comment.site">
-                <img src="../../assets/img/avatar.jpg" alt />
+                <img :src="userGravatar(comment.email) || '../../assets/img/avatar.jpg'" alt />
                 <span>{{comment.nickname}}</span>
               </a>
               <span class="time">{{comment.publishTime}}</span>
@@ -141,6 +186,7 @@
 
 <script>
 import moment from "moment";
+import gravatar from "gravatar";
 moment.locale("zh-CN");
 import { scrollTo } from "../../../utils/scroll";
 export default {
@@ -149,10 +195,15 @@ export default {
   data() {
     return {
       commentList: [], //文章评论列表
-      // 文章评论参数
-      nickname: "",
-      email: "",
-      site: "",
+      // 用户相关
+      userCacheMode: false, //本地存储是否有用户
+      userCacheEditing: false, //本地存储用户是否编辑
+      user: {
+        nickname: "",
+        email: "",
+        site: "",
+        userAvatar: null
+      },
       // 评论相关
       replyId: 0, //引用回复评论id
       activeComment: 0, //找到原始评论
@@ -162,13 +213,12 @@ export default {
       emailErrCode: 1, //提示信息 1 => 未输入邮箱 2 => 输入邮箱不合法
       // 编辑器相关
       comentContentHtml: "",
-      previewContent: "",
-      previewMode: false,
+      emojiState: false,
       // 用户历史数据
       likeComments: [],
       regexp: {
         email: /\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/,
-        url: /^[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"\"])*$/
+        url: /^((https|http):\/\/)+[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"\"])*$/
       }
     };
   },
@@ -181,21 +231,80 @@ export default {
   methods: {
     // 初始化本地用户数据即点赞历史
     initUser() {
-      let likeComments = localStorage.getItem("like_comments");
-      if (likeComments) {
-        this.likeComments = JSON.parse(likeComments);
+      if (localStorage) {
+        let likeComments = localStorage.getItem("like_comments");
+        let user = localStorage.getItem("blog_user");
+        if (likeComments) {
+          this.likeComments = JSON.parse(likeComments);
+        }
+        if (user) {
+          this.user = JSON.parse(user);
+          console.log(this.user);
+          this.userCacheMode = true;
+        }
       }
+    },
+    updateUserCache() {
+      localStorage.setItem("blog_user", JSON.stringify(this.user));
+      this.userCacheEditing = false;
+    },
+    clearUserCache() {
+      this.userCacheMode = false;
+      this.userCacheEditing = false;
+      localStorage.removeItem("blog_user");
+      Object.keys(this.user).forEach(key => {
+        this.user[key] = "";
+      });
+      console.log(this.user);
     },
     // 清空输入表单
     initComment() {
       this.replyId = 0;
-      this.nickname = "";
-      this.email = "";
-      this.site = "";
+      this.user.nickname = "";
+      this.user.email = "";
+      this.user.site = "";
       this.comentContentHtml = "";
       this.$refs.markdown.innerHTML = this.comentContentHtml;
     },
-
+    // 头像服务
+    userGravatar(email) {
+      if (!this.regexp.email.test(email)) return null;
+      let gravatarUrl = gravatar.url(email, {
+        protocol: "https"
+      });
+      return gravatarUrl;
+    },
+    // 编辑器相关
+    commentContentChange() {
+      const html = this.$refs.markdown.innerHTML;
+      if (!Object.is(html, this.comentContentHtml)) {
+        this.comentContentHtml = html;
+      }
+    },
+    insertEmoji(emoji) {
+      this.updateCommentContent({ end: emoji });
+      this.emojiState = false;
+    },
+    updateCommentContent({ start = "", end = "" }) {
+      if (!start && !end) return false;
+      // 如果选中了内容，则把选中的内容替换，否则在光标位置插入新内容
+      const selectedText = (
+        window.getSelection || document.getSelection
+      )().toString();
+      const currentText = this.$refs.markdown.innerHTML;
+      if (!!selectedText) {
+        const newText = currentText.replace(
+          selectedText,
+          start + selectedText + end
+        );
+        this.$refs.markdown.innerHTML = newText;
+      } else {
+        this.$refs.markdown.innerHTML = this.$refs.markdown.innerHTML +=
+          start + end;
+        this.$refs.markdown.scrollTop = this.$refs.markdown.scrollHeight;
+      }
+      this.commentContentChange();
+    },
     // 获取评论列表
     getComment() {
       axios.get(`/api/v1/comment/${this.articleId}`).then(res => {
@@ -213,8 +322,8 @@ export default {
     // 校验用户输入的表单
     checkEmail() {
       //邮箱不为空
-      if (!!this.email) {
-        let boolean = this.regexp.email.test(this.email);
+      if (!!this.user.email) {
+        let boolean = this.regexp.email.test(this.user.email);
         boolean
           ? (this.emailTip = false)
           : ((this.emailTip = true), (this.emailErrCode = 2));
@@ -224,12 +333,12 @@ export default {
       }
     },
     checkSite() {
-      if (this.site.length === 0) {
+      if (this.user.site.length === 0) {
         this.siteTip = false;
         return;
       }
 
-      if (!this.regexp.url.test(this.site)) {
+      if (!this.regexp.url.test(this.user.site)) {
         this.siteTip = true;
       } else {
         this.siteTip = false;
@@ -240,20 +349,29 @@ export default {
       if (!this.comentContentHtml) {
         return;
       }
-      if (!this.nickname) {
+      if (!this.user.nickname) {
         return;
       }
-      if (!this.email) {
+      if (!this.user.email) {
         return;
+      }
+      if (!localStorage.getItem("blog_user")) {
+        let blogUser = {
+          nickname: this.user.nickname,
+          email: this.user.email,
+          site: this.user.site,
+          avatar: this.userGravatar(this.user.email)
+        };
+        localStorage.setItem("blog_user", JSON.stringify(blogUser));
       }
       let params = {
         articleId: this.articleId,
         replyId: this.replyId,
         // 评论参数
         content: this.comentContentHtml,
-        nickname: this.nickname,
-        email: this.email,
-        site: this.site
+        nickname: this.user.nickname,
+        email: this.user.email,
+        site: this.user.site
       };
       axios
         .post(`/api/v1/comment`, params)
@@ -262,6 +380,8 @@ export default {
           if (res.status == 200) {
             this.getComment();
             this.initComment();
+            this.userCacheMode = true;
+            this.updateUserCache();
           }
         })
         .catch(err => {});
@@ -335,13 +455,6 @@ export default {
     // 获取某条评论是否被点赞
     commentLinked(commentId) {
       return this.likeComments.includes(commentId);
-    },
-    // 编辑器相关
-    commentContentChange() {
-      const html = this.$refs.markdown.innerHTML;
-      if (!Object.is(html, this.comentContentHtml)) {
-        this.comentContentHtml = html;
-      }
     }
   },
   computed: {
@@ -380,18 +493,46 @@ export default {
   justify-content: space-between;
   margin-bottom: 1em;
 }
-.comment .edit-box .markdown .markdown-editor {
-  min-height: 6em;
-  max-height: 30em;
-  line-height: 1.8em;
+.comment .edit-box .markdown {
   position: relative;
-  overflow: auto;
+}
+.comment .edit-box .markdown svg {
+  width: 1.3em;
+  height: 1.3em;
+  position: absolute;
+  color: #6b6b6b;
+  left: 0.6rem;
+  bottom: 0.6rem;
+}
+.comment .edit-box .markdown .emoji-icon {
+  cursor: pointer;
+}
+.comment .edit-box .markdown .emoji-box {
+  width: 180px;
+  height: 100px;
+  position: absolute;
+  left: 0.6rem;
+  bottom: 2rem;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  overflow-y: auto;
+}
+.emoji-box ul li {
+  display: inline-block;
+  margin: 5px 8px;
+  cursor: pointer;
 }
 .comment .edit-box .markdown .markdown-editor {
   width: 100%;
+  min-height: 8em;
+  max-height: 30em;
+  line-height: 1.8em;
+  padding: 0.5em;
+  position: relative;
+  overflow: auto;
   resize: none;
   outline: none;
-  padding: 0.5em;
   cursor: auto;
   font-size: 0.95em;
   border: 1px solid #eee;
@@ -474,10 +615,17 @@ export default {
 }
 .comment .user-info {
   display: flex;
+  align-items: center;
   padding-left: 62px;
 }
 .comment .user-info > div {
   flex: 1;
+}
+.comment .user-info > div.save {
+  flex: 0;
+  padding: 0.2rem 1rem;
+  color: #73b769;
+  cursor: pointer;
 }
 .comment div .user-info div {
   position: relative;
@@ -492,7 +640,7 @@ export default {
   top: 100%;
   left: 0;
 }
-.comment .user-info > div:nth-of-type(2n) {
+.comment .user-info > div:nth-of-type(2) {
   margin: 0 10px;
 }
 .comment .user-info > div > input {
@@ -510,6 +658,53 @@ export default {
 .comment .user-info > div:last-of-type > input:hover {
   border-color: #8391a5;
 }
+
+.comment .cache-user {
+  height: 2em;
+  line-height: 2em;
+  margin-top: 0.3rem;
+  color: rgb(102, 102, 102);
+}
+.cache-user .edit {
+  display: flex;
+  justify-content: flex-end;
+  text-align: right;
+  line-height: 2em;
+  position: relative;
+}
+.cache-user a.setting ul {
+  display: none;
+  background-color: #fff;
+}
+.cache-user a.setting:hover ul {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+}
+.cache-user a.setting ul li {
+  padding: 0 0.6rem;
+  border-radius: 0.2rem;
+  overflow: hidden;
+  text-align: right;
+  cursor: pointer;
+}
+.cache-user a.setting ul li:hover {
+  background-color: rgba(224, 224, 224);
+}
+.comment .cache-user a.setting {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+  margin-left: 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.cache-user a.setting > span {
+  margin-left: 0.6rem;
+}
+
 .comment .submit {
   width: 56px;
   position: relative;
@@ -580,7 +775,7 @@ export default {
   text-decoration: underline;
 }
 .comment-body .comment-header .time {
-  font-size: 12px;
+  font-size: 0.9rem;
   font-family: Arial;
   color: #b3b3b3;
 }
