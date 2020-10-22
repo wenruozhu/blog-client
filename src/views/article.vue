@@ -15,9 +15,12 @@
       <li v-for="(article,index) in articleList" :key="index">
         <router-link :to="{name: 'article_detail',query: { articleId: article.id }}">
           <article>
-            <span class="date">{{article.publishTime}}</span>
-            <span class="tag">{{article.category|category}}</span>
             <h6 class="title">{{article.title}}</h6>
+            <p class="descript" v-if="article.descript">{{article.descript}}</p>
+            <div class="meta">
+              <span class="date">{{article.publishTime}}</span>
+              <span class="tag">{{article.category|category}}</span>
+            </div>
           </article>
         </router-link>
       </li>
@@ -71,8 +74,6 @@ export default {
 </script>
 <style scoped>
 /* PC端样式 */
-/* .article {
-} */
 @media (min-width: 852px) {
   .article .article-pc {
     display: block;
@@ -89,13 +90,13 @@ export default {
   padding: 0.5rem 2rem;
   position: relative;
 }
-.article article {
+.article .article-pc article {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   font-size: 16px;
 }
-.article article:before {
+.article .article-pc article:before {
   content: " ";
   width: 6px;
   height: 6px;
@@ -107,7 +108,7 @@ export default {
   background: #ccc;
   border-radius: 50%;
 }
-.article article span.date {
+.article .article-pc article span.date {
   font-size: 1rem;
   color: #ccc;
 }
@@ -120,7 +121,7 @@ export default {
   border-radius: 2px;
   cursor: pointer;
 }
-.article article h6 {
+.article .article-pc article h6 {
   width: 70%;
   text-decoration: underline;
   font-size: 16px;
@@ -138,5 +139,32 @@ export default {
     display: block;
   }
 }
-
+.article .article-mobile article .title {
+  margin-bottom: 0.5rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: rgb(36, 41, 46);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.article .article-mobile article .descript{
+  margin: 2rem 0;
+    min-height: 4rem;
+    line-height: 1.8rem;
+    color: #666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+}
+.article .article-mobile article .meta {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin-top: 0.5rem;
+  height: 1rem;
+  line-height: 1rem;
+  font-size: 0.85rem;
+  color: #4d4d4d;
+}
 </style>

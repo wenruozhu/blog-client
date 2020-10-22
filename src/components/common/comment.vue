@@ -8,7 +8,7 @@
       </div>
       <div class="edit-box">
         <div class="avatar" key="2">
-          <img src="../../assets/img/avatar.jpg" alt="匿名用户" />
+          <img :src="userGravatar(user.email) || '../../assets/img/avatar.jpg'" alt />
         </div>
         <div class="editor">
           <transition-group tag="div" name="list">
@@ -140,7 +140,12 @@
         >
           <div class="comment-body">
             <div class="comment-header">
-              <a target="_blank" class="comment-user-info" :href="comment.site">
+              <a
+                target="_blank"
+                class="comment-user-info"
+                @click.stop="clickUser($event, comment.site)"
+                :href="comment.site"
+              >
                 <img :src="userGravatar(comment.email) || '../../assets/img/avatar.jpg'" alt />
                 <span>{{comment.nickname}}</span>
               </a>
@@ -239,12 +244,17 @@ export default {
         }
         if (user) {
           this.user = JSON.parse(user);
-          console.log(this.user);
           this.userCacheMode = true;
         }
       }
     },
     updateUserCache() {
+      if (!this.user.nickname) {
+        return;
+      }
+      if (!this.user.email) {
+        return;
+      }
       localStorage.setItem("blog_user", JSON.stringify(this.user));
       this.userCacheEditing = false;
     },
@@ -256,15 +266,6 @@ export default {
         this.user[key] = "";
       });
       console.log(this.user);
-    },
-    // 清空输入表单
-    initComment() {
-      this.replyId = 0;
-      this.user.nickname = "";
-      this.user.email = "";
-      this.user.site = "";
-      this.comentContentHtml = "";
-      this.$refs.markdown.innerHTML = this.comentContentHtml;
     },
     // 头像服务
     userGravatar(email) {
@@ -376,15 +377,22 @@ export default {
       axios
         .post(`/api/v1/comment`, params)
         .then(res => {
-          const data = res;
+          console.log(res);
           if (res.status == 200) {
+            this.replyId = 0;
             this.getComment();
-            this.initComment();
+            this.comentContentHtml = "";
+            this.$refs.markdown.innerHTML = this.comentContentHtml;
             this.userCacheMode = true;
             this.updateUserCache();
           }
         })
         .catch(err => {});
+    },
+    clickUser(event, site) {
+      if (!this.regexp.site.test(site)) {
+        event.preventDefault();
+      }
     },
     // 跳转到某条指定的id位置
     toSomeAnchorById(id) {
@@ -440,7 +448,6 @@ export default {
       axios
         .post(`/api/v1/comment/likeComment`, params)
         .then(res => {
-          const data = res;
           if (res.status == 200) {
             this.likeComments.push(comment.id);
             localStorage.setItem(

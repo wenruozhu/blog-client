@@ -64,7 +64,6 @@
                 v-model="message"
                 placeholder="来都来了，不说点什么就走？😁"
               ></textarea>
-              <!-- 曾经有一个 BUG 摆在我的面前......（必填） -->
             </div>
           </form>
         </div>
@@ -114,6 +113,13 @@ export default {
           if (res.data.length === 0) {
             this.loadState = true;
           }
+          // 留言墙审核
+          /* let verifyMessage = [];
+          res.data.map(message => {
+            if (!!message.state) {
+              verifyMessage.push(message);
+            }
+          }); */
           this.messageList = this.messageList.concat(res.data);
           this.loading = false;
         })
@@ -135,8 +141,10 @@ export default {
         .then(res => {
           const data = res;
           if (res.status == 200) {
+            this.messageList = [];
             this.getMessage();
             this.dialogState = false;
+            // alert("留言成功，审核通过后才显示。");
           }
         })
         .catch(err => {});
@@ -211,11 +219,9 @@ export default {
   padding: 0 1rem;
 }
 .message {
-  position: relative;
-  left: 0;
-  top: 0;
-  padding: 1rem;
   min-height: 13rem;
+  position: relative;
+  padding: 1rem;
   margin-bottom: 1rem;
   color: #24292e;
   background: #f7f7f7;
@@ -253,7 +259,7 @@ export default {
 }
 .load-more {
   margin-top: 1rem;
-  padding: 1.2rem;
+  padding: 1rem;
   text-align: center;
   font-size: 1rem;
   color: rgb(36, 41, 46);
