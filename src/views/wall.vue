@@ -110,7 +110,8 @@ export default {
               "YYYY.MM.DD HH:MM"
             );
           }
-          if (res.data.length === 0) {
+          // 如果返回的数据小于每页需要显示的结果数量,则数据加载完。
+          if (res.data.length < 6) {
             this.loadState = true;
           }
           // 留言墙审核
@@ -359,6 +360,7 @@ export default {
   .dialog {
     width: 88%;
     padding: 1rem 1rem 1rem 0;
+    top: 7rem;
   }
   .dialog-content .dialog-item {
     margin: 0.8rem 0;

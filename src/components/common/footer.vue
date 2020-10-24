@@ -18,7 +18,8 @@ export default {};
 
 <style>
 .footer {
-  width: 100%;
+  display: flex;
+  justify-content: center;
   padding: 1rem 0;
   margin-top: 1rem;
   border-top: 1px solid #eee;
@@ -31,10 +32,9 @@ export default {};
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding-right: 5rem;
 }
 .footer ul li {
-  padding-right: 2rem;
+  padding: 0 1rem;
   position: relative;
 }
 .footer ul li::after {
@@ -43,7 +43,7 @@ export default {};
   height: 3px;
   position: absolute;
   top: 0;
-  right: 1rem;
+  right: 0;
   bottom: 0;
   margin: auto;
   background: #ccc;

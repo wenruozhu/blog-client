@@ -8,7 +8,8 @@
       </div>
       <div class="edit-box">
         <div class="avatar" key="2">
-          <img :src="userGravatar(user.email) || '../../assets/img/avatar.jpg'" alt />
+          <img v-if="userGravatar(user.email)" :src="userGravatar(user.email)" alt />
+          <img v-else src="../../assets/img/avatar.jpg" alt="">
         </div>
         <div class="editor">
           <transition-group tag="div" name="list">
@@ -68,7 +69,7 @@
           </transition-group>
         </div>
       </div>
-      <transition-group tag="div" name="list">
+      <transition-group tag="div" name="fade" mode="out-in">
         <div class="user-info" v-if="!userCacheMode || userCacheEditing" :key="1">
           <div class="name">
             <input
@@ -120,11 +121,11 @@
             </a>
           </div>
         </div>
-        <div class="submit" :key="3" @click="submitComment">
-          <span>发布</span>
-          <svg-icon id="release" icon-class="release"></svg-icon>
-        </div>
       </transition-group>
+      <div class="submit" @click="submitComment">
+        <span>发布</span>
+        <svg-icon id="release" icon-class="release"></svg-icon>
+      </div>
     </form>
     <div class="list-box">
       <ul>
@@ -377,7 +378,6 @@ export default {
       axios
         .post(`/api/v1/comment`, params)
         .then(res => {
-          console.log(res);
           if (res.status == 200) {
             this.replyId = 0;
             this.getComment();
@@ -575,10 +575,12 @@ export default {
     display: block;
     padding-left: 0;
   }
-  .comment div .user-info div:nth-of-type(2n) {
+  .comment div .user-info div:nth-of-type(2) {
     margin: 1.6rem 0;
   }
-
+  .comment div .user-info div.save {
+    padding: 1rem 0;
+  }
   .comment .list-box ul li {
     padding: 0.1rem 0;
   }
@@ -662,11 +664,11 @@ export default {
 .comment .user-info > div > input:hover {
   border-color: #d06f67;
 }
-.comment .user-info > div:last-of-type > input:hover {
+.comment .user-info > div.site > input:hover {
   border-color: #8391a5;
 }
 
-.comment .cache-user {
+.cache-user {
   height: 2em;
   line-height: 2em;
   margin-top: 0.3rem;
@@ -699,7 +701,7 @@ export default {
 .cache-user a.setting ul li:hover {
   background-color: rgba(224, 224, 224);
 }
-.comment .cache-user a.setting {
+.cache-user a.setting {
   display: flex;
   justify-content: flex-end;
   align-items: center;

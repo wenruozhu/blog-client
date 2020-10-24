@@ -7,6 +7,7 @@
         <router-view />
       </div>
       <my-footer></my-footer>
+      <scroll-top></scroll-top>
     </div>
     <div class="mask" v-if="mobileSideState" @click="mobileSideState=false"></div>
   </div>
@@ -16,17 +17,19 @@
 import myHeader from "@/components/common/header";
 import myFooter from "@/components/common/footer";
 import mobileAside from "@/components/layout/aside";
+import scrollTop from "@/components/layout/scrollTop";
 export default {
   name: "App",
   data() {
     return {
-      mobileSideState: false
+      mobileSideState: false //移动端侧边栏以外蒙版
     };
   },
   components: {
     myHeader,
     myFooter,
-    mobileAside
+    mobileAside,
+    scrollTop
   },
   methods: {
     changeSideState(boolean) {

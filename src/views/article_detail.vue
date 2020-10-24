@@ -122,6 +122,11 @@ export default {
   line-height: 1.8rem;
   margin: 1.2rem 0;
 }
+.article_detail .content p img{
+  display: block;
+  width: 92%;
+  margin: 0 auto;
+}
 .article_detail .content ul {
   padding-left: 2rem;
   margin: 1.2rem 0;

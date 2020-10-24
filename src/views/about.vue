@@ -5,7 +5,7 @@
     <ul>
       <li>
         <span>工作：</span>
-        <p>保持对技术的热情，保持谦虚之心，保持学习的动力。相信遇到的问题多花点时间总能解决。</p>
+        <p>保持对技术的热情，保持学习的动力。相信遇到的问题多花点时间总能解决。</p>
       </li>
       <li>
         <span>技能：</span>
@@ -17,7 +17,7 @@
       </li>
       <li>
         <span>心态：</span>
-        <p>爱阅读、爱编程、爱大自然。</p>
+        <p>爱阅读、爱写代码、爱大自然。</p>
       </li>
       <li>
         <span>原则：</span>
@@ -59,7 +59,7 @@ export default {
   },
   components: {
     comment
-  },
+  }
 };
 </script>
 
@@ -77,14 +77,14 @@ export default {
 .about > p {
   margin: 1rem 0;
 }
-.about ul > li {
+.about > ul > li {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   margin-bottom: 1rem;
   color: #666;
 }
-.about ul li span {
+.about ul > li > span {
   white-space: nowrap;
   font-weight: bold;
   color: #000;
