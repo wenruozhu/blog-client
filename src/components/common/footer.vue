@@ -3,7 +3,7 @@
     <ul>
       <li>©2020</li>
       <li>
-        <a href="mailto:769917560@qq.com" _target="_blank">邮箱</a>
+        <a href="mailto:769917560@qq.com" _target="_blank">{{i18nT("邮箱")}}</a>
       </li>
       <li>
         <a target="_blank" href="https://github.com/wenruozhu">Github</a>

@@ -3,7 +3,7 @@
     <div class="pc-header">
       <nav>
         <div class="nav-item" v-for="(item,index) in nav" :key="index">
-          <router-link :to="item.path">{{item.name}}</router-link>
+          <router-link :to="item.path">{{i18nT(item.name)}}</router-link>
         </div>
       </nav>
     </div>
@@ -12,8 +12,11 @@
         <svg-icon id="menu" icon-class="menu"></svg-icon>
       </span>
       <h6>
-        <router-link to="/">文若</router-link>
+        <router-link to="/">{{i18nT("文若")}}</router-link>
       </h6>
+    </div>
+    <div class="language" @click="changeLanguage">
+      <svg-icon id="language" icon-class="language"></svg-icon>
     </div>
   </div>
 </template>
@@ -34,6 +37,9 @@ export default {
   methods: {
     openSidebar() {
       this.$emit("sideState", true);
+    },
+    changeLanguage() {
+      this.$emit("languageState", true);
     }
   }
 };
@@ -48,13 +54,21 @@ export default {
   z-index: 1;
   background-color: #fff;
 }
+.header .language {
+  display: flex;
+  align-items: center;
+  line-height: 3.9rem;
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  bottom: 0;
+  margin: auto;
+  font-size: 1.8rem;
+}
 /* PC端样式 */
 .pc-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 4rem;
-  line-height: 4rem;
+  height: 3.9rem;
+  line-height: 3.9rem;
   padding: 0 1.5rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
@@ -71,7 +85,7 @@ export default {
 .nav-item a.router-link-exact-active {
   color: rgb(36, 41, 46);
 }
-.nav-item a:hover{
+.nav-item a:hover {
   color: rgb(36, 41, 46);
 }
 @media (min-width: 852px) {
@@ -84,8 +98,8 @@ export default {
 }
 /* 移动端样式 */
 .mobile-header {
-  height: 3.5rem;
-  line-height: 3.5rem;
+  height: 3.9rem;
+  line-height: 3.9rem;
   padding: 0 1rem;
   box-sizing: border-box;
   text-align: center;
@@ -102,7 +116,7 @@ export default {
 .mobile-header h6 {
   font-size: 1.3rem;
 }
-.mobile-header h6 a{
+.mobile-header h6 a {
   color: #000;
 }
 @media (max-width: 852px) {

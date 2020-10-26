@@ -2,18 +2,18 @@
   <div class="app-aside" :class="{open: mobileSideState}">
     <div class="user-header">
       <img src="../../assets/img/avatar.jpg" alt />
-      <h6>文若</h6>
+      <h6>{{i18nT("文若")}}</h6>
     </div>
     <nav>
       <ul>
         <li @click="openSidebar">
-          <router-link to="/">文章</router-link>
+          <router-link to="/">{{i18nT("文章")}}</router-link>
         </li>
         <li @click="openSidebar">
-          <router-link to="/about">关于我</router-link>
+          <router-link to="/about">{{i18nT("关于我")}}</router-link>
         </li>
         <li @click="openSidebar">
-          <router-link to="/wall">留言墙</router-link>
+          <router-link to="/wall">{{i18nT("留言墙")}}</router-link>
         </li>
       </ul>
     </nav>
