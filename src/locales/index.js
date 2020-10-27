@@ -4,7 +4,6 @@ import VueI18n from 'vue-i18n'
 Vue.use(VueI18n)
 
 const DEFAULT_LANG = 'zh'
-const LOCALE_KEY = 'localeLanguage'
 
 let pinyin = require("pinyin"); //文字转拼音
 Vue.prototype.pinyin = ((str) => {
@@ -31,7 +30,7 @@ let getData = function (arr) { //转化language.json文件函数
     }
 };
 let locales = getData(language.language);
-console.log(locales)
+// console.log(locales)
 const i18n = new VueI18n({
     locale: DEFAULT_LANG,
     messages: locales,
@@ -40,30 +39,12 @@ const i18n = new VueI18n({
 Vue.prototype.i18n = i18n;
 Vue.prototype.i18nT = function (str) {
     // str  翻译的文字
-    //flag  当语言包找不到的时候，是否请求后台返回翻译结果, true为不转换，直接返回，false 请求
     if (!str) return '';
-    let key = str;
     str = Vue.prototype.pinyin(str);
     if (str && str != '') {
-        console.log(str)
+        console.log('拼音', str)
         let finishStr = Vue.prototype.i18n.t(str);
-        console.log(finishStr)
-        if (finishStr == str) {
-            //没有翻译的暂时翻译为中文
-            let zObj = Vue.prototype.i18n.messages.zh;
-            let hObj = Vue.prototype.i18n.messages.hk;
-            let eObj = Vue.prototype.i18n.messages.en;
-            zObj.message[Vue.prototype.pinyin(key)] = key;
-            hObj.message[Vue.prototype.pinyin(key)] = key;
-            eObj.message[Vue.prototype.pinyin(key)] = key;
-
-            Vue.prototype.i18n.setLocaleMessage('zh', zObj)
-            Vue.prototype.i18n.setLocaleMessage('hk', hObj)
-            Vue.prototype.i18n.setLocaleMessage('en', eObj)
-            return key;
-        } else {
-            return finishStr;
-        }
+        return finishStr;
     }
     return '';
 }
@@ -81,6 +62,20 @@ export const setupLan = (lang) => {
     Vue.prototype.language = `lang-${lang}`;
     localStorage.setItem('lang', lang);
 }
+//设置默认语言为中文
+let _lang = localStorage.getItem('lang');
+let ua_lang = window.navigator.language.toLocaleLowerCase();
+let window_lang = 'zh';
 
+if (ua_lang == 'zh-cn' || ua_lang == 'zh-sg') {
+    window_lang = 'zh'
+} else if (ua_lang == 'zh-tw' || ua_lang == 'zh-hk') {
+    window_lang = 'hk'
+} else {
+    window_lang = 'en'
+}
+let z_lang = _lang || window_lang;
+
+setupLan(z_lang)
 window.i18nT = Vue.prototype.i18nT;
 export default i18n

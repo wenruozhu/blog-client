@@ -14,7 +14,7 @@
         <li @click="changeLanguage('zh')">中文简体</li>
         <li @click="changeLanguage('hk')">中文繁体</li>
         <li @click="changeLanguage('en')">English</li>
-        <li @click="languageState=false">取消</li>
+        <li @click="languageState=false">{{i18nT("取消")}}</li>
       </ul>
     </div>
     <div v-show="languageState" class="language-mask" @click="languageState=false"></div>
@@ -97,6 +97,7 @@ export default {
 .language-list ul li {
   line-height: 3rem;
   border-bottom: 1px solid #eee;
+  cursor: pointer;
 }
 .language-list ul li:last-of-type {
   border-top: 0.5rem solid #eee;

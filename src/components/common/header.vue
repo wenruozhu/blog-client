@@ -45,7 +45,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .header {
   width: 100%;
   position: fixed;
@@ -64,6 +64,7 @@ export default {
   bottom: 0;
   margin: auto;
   font-size: 1.8rem;
+  cursor: pointer;
 }
 /* PC端样式 */
 .pc-header {
