@@ -42,7 +42,6 @@ Vue.prototype.i18nT = function (str) {
     if (!str) return '';
     str = Vue.prototype.pinyin(str);
     if (str && str != '') {
-        console.log('拼音', str)
         let finishStr = Vue.prototype.i18n.t(str);
         return finishStr;
     }

@@ -266,7 +266,6 @@ export default {
       Object.keys(this.user).forEach(key => {
         this.user[key] = "";
       });
-      console.log(this.user);
     },
     // 头像服务
     userGravatar(email) {

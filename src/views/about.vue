@@ -17,7 +17,7 @@
       </li>
       <li>
         <span>心态：</span>
-        <p>爱阅读、爱写代码、爱大自然。</p>
+        <p>爱阅读、爱编程、爱大自然。</p>
       </li>
       <li>
         <span>原则：</span>
@@ -42,6 +42,12 @@
       </li>
       <li>
         <span>数据库：</span> Mysql
+      </li>
+      <li>
+        <span>服务器：</span> Nginx
+      </li>
+      <li>
+        <span>Linux：</span> CentOs
       </li>
     </ul>
     <comment :articleId="articleId"></comment>
