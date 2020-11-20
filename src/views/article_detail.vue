@@ -111,7 +111,6 @@ export default {
 .article_detail h4,
 .article_detail h5,
 .article_detail h6 {
-  line-height: 1.8rem;
   padding-left: 0;
   margin: 1.2rem 0;
   font-size: 1.6rem;

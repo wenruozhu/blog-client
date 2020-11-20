@@ -17,7 +17,7 @@
         <li @click="languageState=false">{{i18nT("取消")}}</li>
       </ul>
     </div>
-    <div v-show="languageState" class="language-mask" @click="languageState=false"></div>
+    <div v-if="languageState" class="language-mask" @click="languageState=false"></div>
     <div class="aside-mask" v-if="mobileSideState" @click="mobileSideState=false"></div>
   </div>
 </template>

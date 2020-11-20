@@ -6,13 +6,13 @@
     </div>
     <nav>
       <ul>
-        <li @click="openSidebar">
+        <li @click="closeSidebar">
           <router-link to="/">{{i18nT("文章")}}</router-link>
         </li>
-        <li @click="openSidebar">
+        <li @click="closeSidebar">
           <router-link to="/about">{{i18nT("关于我")}}</router-link>
         </li>
-        <li @click="openSidebar">
+        <li @click="closeSidebar">
           <router-link to="/wall">{{i18nT("留言墙")}}</router-link>
         </li>
       </ul>
@@ -29,7 +29,7 @@ export default {
     }
   },
   methods: {
-    openSidebar() {
+    closeSidebar() {
       this.$emit("sideState", false);
     }
   }

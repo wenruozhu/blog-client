@@ -13,11 +13,42 @@ body {
 }
 
 *,
+*:before,
+*:after {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    outline: none;
+}
+
+*,
 :hover {
     transition: background-color .1s linear, margin .25s linear, opacity .25s linear, visibility .25s linear, border-color .25s linear, -webkit-filter .25s linear, -webkit-transform .25s linear;
     transition: background-color .1s linear, margin .25s linear, opacity .25s linear, filter .25s linear, visibility .25s linear, transform .25s linear, border-color .25s linear;
     transition: background-color .1s linear, margin .25s linear, opacity .25s linear, filter .25s linear, visibility .25s linear, transform .25s linear, border-color .25s linear, -webkit-filter .25s linear, -webkit-transform .25s linear;
 }
+/*苹果浏览器去掉默认*/
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+    -webkit-appearance: none;
+    outline: none;
+}
+
+textarea {
+    -webkit-appearance: none;
+}
+
+input {
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    outline: none;
+    box-sizing: border-box;
+}
+
+/*苹果去阴影*/
 body,
 dl,
 dd,

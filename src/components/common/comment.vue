@@ -9,7 +9,7 @@
       <div class="edit-box">
         <div class="avatar" key="2">
           <img v-if="userGravatar(user.email)" :src="userGravatar(user.email)" alt />
-          <img v-else src="../../assets/img/avatar.jpg" alt="">
+          <img v-else src="../../assets/img/avatar.jpg" alt />
         </div>
         <div class="editor">
           <transition-group tag="div" name="list">
@@ -61,7 +61,7 @@
                     <li class="item" @click="insertEmoji('💪')">💪</li>
                     <li class="item" @click="insertEmoji('🌹')">🌹</li>
                     <li class="item" @click="insertEmoji('🇨🇳')">🇨🇳</li>
-                    <li class="item" @click="insertEmoji('🇺🇸')">🇺🇸</li>
+                    <li class="item" @click="insertEmoji('🎃')">🎃</li>
                   </ul>
                 </div>
               </transition>
@@ -559,38 +559,6 @@ export default {
   flex-grow: 1;
   max-width: calc(100% - 56px);
 }
-/* 评论区移动端样式 */
-@media (max-width: 852px) {
-  .comment .avatar {
-    display: none;
-  }
-  .edit-box {
-    width: auto;
-  }
-  .comment .editor {
-    max-width: 100%;
-  }
-  .comment div .user-info {
-    display: block;
-    padding-left: 0;
-  }
-  .comment div .user-info div:nth-of-type(2) {
-    margin: 1.6rem 0;
-  }
-  .comment div .user-info div.save {
-    padding: 1rem 0;
-  }
-  .comment .list-box ul li {
-    padding: 0.1rem 0;
-  }
-  .comment .comment-body .comment-header a img {
-    width: 36px;
-    height: 36px;
-    position: static;
-    margin-right: 1rem;
-    border-radius: 6px;
-  }
-}
 
 .will-reply {
   margin-bottom: 1em;
@@ -738,7 +706,6 @@ export default {
   right: 6px;
   bottom: 0;
   margin: auto;
-  margin-left: 8px;
 }
 .comment .list-box {
   margin-top: 20px;
@@ -833,5 +800,45 @@ export default {
 }
 .comment-item:hover .comment-footer > a.reply {
   opacity: 1;
+}
+
+/* 评论区移动端样式 */
+@media (max-width: 852px) {
+  .comment .avatar {
+    display: none;
+  }
+  .edit-box {
+    width: auto;
+  }
+  .comment .editor {
+    max-width: 100%;
+  }
+  .comment div .user-info {
+    display: block;
+    padding-left: 0;
+  }
+  .comment div .user-info div:nth-of-type(2) {
+    margin: 1.6rem 0;
+  }
+  .comment div .user-info div.save {
+    padding: 1rem 0;
+  }
+  .comment .list-box ul li {
+    padding: 0.1rem 0;
+  }
+  .comment .comment-body .comment-header a img {
+    width: 36px;
+    height: 36px;
+    position: static;
+    margin-right: 1rem;
+    border-radius: 6px;
+  }
+  .comment-body .comment-footer > a.reply {
+    opacity: 1;
+  }
+  .comment .submit{
+    width: 62px;
+    font-size: 15px;
+  }
 }
 </style>

@@ -137,6 +137,7 @@ export default {
   }
   .article .article-mobile {
     display: block;
+    width: auto;
   }
 }
 .article .article-mobile article .title {
