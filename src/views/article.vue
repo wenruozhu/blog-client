@@ -82,6 +82,9 @@ export default {
     display: none;
   }
 }
+.article {
+  padding-bottom: 390px;
+}
 .article .article-pc {
   width: 45rem;
   margin: 0 auto;
@@ -148,15 +151,15 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.article .article-mobile article .descript{
+.article .article-mobile article .descript {
   margin: 2rem 0;
-    min-height: 4rem;
-    line-height: 1.8rem;
-    color: #666;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
+  min-height: 4rem;
+  line-height: 1.8rem;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
 }
 .article .article-mobile article .meta {
   display: flex;

@@ -9,7 +9,8 @@
       <div class="edit-box">
         <div class="avatar" key="2">
           <img v-if="userGravatar(user.email)" :src="userGravatar(user.email)" alt />
-          <img v-else src="../../assets/img/avatar.jpg" alt />
+          <!-- <img v-else src="../../assets/img/avatar.jpg" alt /> -->
+          <svg-icon v-else id="avatar" icon-class="avatar"></svg-icon>
         </div>
         <div class="editor">
           <transition-group tag="div" name="list">
@@ -293,7 +294,7 @@ export default {
         window.getSelection || document.getSelection
       )().toString();
       const currentText = this.$refs.markdown.innerHTML;
-      if (!!selectedText) {
+      if (selectedText) {
         const newText = currentText.replace(
           selectedText,
           start + selectedText + end
@@ -323,7 +324,7 @@ export default {
     // 校验用户输入的表单
     checkEmail() {
       //邮箱不为空
-      if (!!this.user.email) {
+      if (this.user.email) {
         let boolean = this.regexp.email.test(this.user.email);
         boolean
           ? (this.emailTip = false)
@@ -486,13 +487,10 @@ export default {
 }
 /* 评论模块样式 */
 .comment .avatar {
-  width: 36px;
-  height: 36px;
-  margin-right: 1em;
+  font-size: 36px;
 }
-.comment .avatar img {
-  width: 100%;
-  border-radius: 6px;
+.comment .avatar svg{
+  vertical-align: top;
 }
 .comment .edit-box {
   display: flex;
@@ -626,6 +624,7 @@ export default {
   border: 1px solid #eee;
   border-radius: 6px;
   box-sizing: border-box;
+  font-size: .85em;
   transform: all 1s;
 }
 .comment .user-info > div > input:hover {
@@ -682,7 +681,7 @@ export default {
 }
 
 .comment .submit {
-  width: 56px;
+  width: 65px;
   position: relative;
   padding: 3px 6px;
   margin-top: 10px;
@@ -837,7 +836,6 @@ export default {
     opacity: 1;
   }
   .comment .submit{
-    width: 62px;
     font-size: 15px;
   }
 }

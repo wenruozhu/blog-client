@@ -47,7 +47,7 @@
         <span>服务器：</span> Nginx
       </li>
       <li>
-        <span>Linux：</span> CentOs
+        <span>Linux发行版：</span> CentOs
       </li>
     </ul>
     <comment :articleId="articleId"></comment>

@@ -243,7 +243,7 @@ export default {
   max-height: 20rem;
   line-height: 1.4rem;
   margin: 1rem 0;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   word-break: break-all;
   overflow: hidden;
 }
@@ -310,6 +310,7 @@ export default {
   width: calc(100% - 80px);
   padding: 0.3rem 0.5rem;
   border: 1px solid #eee;
+  font-size: 13.5px;
   color: #24292e;
   border-radius: 6px;
 }
@@ -319,6 +320,7 @@ export default {
   resize: none;
   padding: 0.3rem 0.5rem;
   border: 1px solid #eee;
+  font-size: 13.5px;
   color: #24292e;
   border-radius: 6px;
 }

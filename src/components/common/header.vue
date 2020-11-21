@@ -63,7 +63,7 @@ export default {
   right: 1rem;
   bottom: 0;
   margin: auto;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   cursor: pointer;
 }
 /* PC端样式 */
