@@ -145,6 +145,7 @@ export default {
   position: relative;
   margin: 1rem 0;
   overflow: auto;
+  white-space: pre-wrap;
   border-radius: 0.35rem;
   font-size: 16px;
   background: #f6f8fa;
@@ -170,12 +171,10 @@ export default {
   top: 10px;
   left: 1.5rem;
   box-shadow: 20px 0 #ffbd2e, 40px 0 #27c93f;
-  z-index: 3;
 }
 .article_detail .content pre code {
   letter-spacing: 0.3px;
-  /* font-family: -apple-system, BlinkMacSystemFont, PingFang SC, Hiragino Sans GB,
-    sans-serif; */
+  font-family: Menlo,Monaco,Consolas,Courier New,monospace;
   font-weight: 500;
   box-sizing: border-box;
 }

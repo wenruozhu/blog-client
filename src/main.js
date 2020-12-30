@@ -11,7 +11,7 @@ import './assets/css/index.css'
 
 Vue.config.productionTip = false
 // axios.defaults.baseURL = 'https://jsonplaceholder.typicode.com' //假数据接口
-axios.defaults.baseURL = 'http://www.wenruozhu.com:8081'
+axios.defaults.baseURL = 'https://api.wenruozhu.com'
 // axios.defaults.baseURL = 'http://localhost:8081'
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 new Vue({

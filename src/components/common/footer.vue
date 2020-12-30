@@ -1,7 +1,7 @@
 <template>
   <div class="footer">
     <ul>
-      <li>©2020</li>
+      <li>©{{year}}</li>
       <li>
         <a href="mailto:769917560@qq.com" _target="_blank">{{i18nT("邮箱")}}</a>
       </li>
@@ -13,7 +13,17 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name: "common-footer",
+  data() {
+    return {
+      year:''
+    };
+  },
+  created() {
+    this.year = new Date().getFullYear();
+  },
+};
 </script>
 
 <style>

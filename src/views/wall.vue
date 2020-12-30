@@ -42,40 +42,42 @@
       </div>
     </div>
     <div class="load-more" v-if="!loadState" @click="getMoreMessage">{{loading ? "加载中" : "加载更多"}}</div>
-    <transition name="slide-down">
-      <div class="dialog" v-show="dialogState">
-        <div class="dialog-head">
-          <a href="javascript:;" @click="dialogState = false">
-            <svg-icon id="cancel" icon-class="cancel"></svg-icon>
-          </a>
+    <div id="modal-wrapper">
+      <transition name="slide-down">
+        <div class="dialog" v-show="dialogState">
+          <div class="dialog-head">
+            <a href="javascript:;" @click="dialogState = false">
+              <svg-icon id="cancel" icon-class="cancel"></svg-icon>
+            </a>
+          </div>
+          <div class="dialog-content">
+            <form>
+              <div class="dialog-item name">
+                <span>名字：</span>
+                <input type="text" maxlength="18" v-model="name" placeholder="称呼（非必填）" />
+              </div>
+              <div class="dialog-item content">
+                <span>说点啥？</span>
+                <textarea
+                  cols="30"
+                  rows="8"
+                  maxlength="200"
+                  v-model="message"
+                  placeholder="来都来了，不说点什么就走？😁"
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="dialog-footer">
+            <button @click="dialogState = false">取消</button>
+            <button @click="leaveMessage">确定</button>
+          </div>
         </div>
-        <div class="dialog-content">
-          <form>
-            <div class="dialog-item name">
-              <span>名字：</span>
-              <input type="text" maxlength="18" v-model="name" placeholder="称呼（非必填）" />
-            </div>
-            <div class="dialog-item content">
-              <span>说点啥？</span>
-              <textarea
-                cols="30"
-                rows="10"
-                maxlength="200"
-                v-model="message"
-                placeholder="来都来了，不说点什么就走？😁"
-              ></textarea>
-            </div>
-          </form>
-        </div>
-        <div class="dialog-footer">
-          <button @click="dialogState = false">取消</button>
-          <button @click="leaveMessage">确定</button>
-        </div>
-      </div>
-    </transition>
-    <transition name="fade">
-      <div class="mask" v-show="dialogState" @click="dialogState = false"></div>
-    </transition>
+      </transition>
+      <transition name="fade">
+        <div class="mask" v-show="dialogState" @click="dialogState = false"></div>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -98,8 +100,22 @@ export default {
   created() {
     this.getMessage();
   },
-
+  watch: {
+    dialogState() {
+      let html = document.getElementsByTagName("html")[0];
+      let modalWrapper = document.getElementById("modal-wrapper");
+      
+      if (this.dialogState) {
+        html.setAttribute("style", "overflow: hidden;");
+        modalWrapper.setAttribute("style", "position: fixed;");
+      } else {
+        html.setAttribute("style", "");
+        modalWrapper.setAttribute("style", "display:none");
+      }
+    }
+  },
   methods: {
+    // 获取留言
     getMessage() {
       this.loading = true;
       axios
@@ -128,6 +144,7 @@ export default {
           console.log(err);
         });
     },
+    // 留言
     leaveMessage() {
       let params = {
         name: this.name,
@@ -143,6 +160,8 @@ export default {
           const data = res;
           if (res.status == 200) {
             this.messageList = [];
+            this.name = "";
+            this.message = "";
             this.getMessage();
             this.dialogState = false;
             // alert("留言成功，审核通过后才显示。");
@@ -150,6 +169,7 @@ export default {
         })
         .catch(err => {});
     },
+    // 获取更多留言
     getMoreMessage() {
       if (this.loading) {
         return;
@@ -269,15 +289,21 @@ export default {
 .load-more:hover {
   background: rgba(158, 169, 179, 0.12);
 }
-
+#modal-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: static;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+}
 .dialog {
   width: 34rem;
   padding: 1rem;
   position: absolute;
-  top: 10rem;
-  left: 0;
-  right: 0;
-  margin: auto;
   z-index: 2;
   background: #fff;
   border-radius: 0.5rem;
@@ -297,8 +323,8 @@ export default {
 }
 .dialog .dialog-item > span {
   display: inline-block;
-  height: 30px;
   width: 80px;
+  height: 30px;
   line-height: 30px;
   text-align: right;
 }
@@ -338,6 +364,7 @@ export default {
   background: transparent;
   white-space: nowrap;
   cursor: pointer;
+  font-size: 13px;
 }
 .dialog-footer button:hover {
   border-color: #24292e;
@@ -362,7 +389,6 @@ export default {
   .dialog {
     width: 88%;
     padding: 1rem 1rem 1rem 0;
-    top: 7rem;
   }
   .dialog-content .dialog-item {
     margin: 0.8rem 0;
@@ -379,6 +405,6 @@ export default {
   right: 0;
   bottom: 0;
   z-index: 1;
-  background-color: #4d4d4d;
+  background-color: rgba(18, 18, 18, 0.75);
 }
 </style>

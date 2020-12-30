@@ -9,8 +9,7 @@
       <div class="edit-box">
         <div class="avatar" key="2">
           <img v-if="userGravatar(user.email)" :src="userGravatar(user.email)" alt />
-          <!-- <img v-else src="../../assets/img/avatar.jpg" alt /> -->
-          <svg-icon v-else id="avatar" icon-class="avatar"></svg-icon>
+          <img v-else src="../../assets/img/default_avatar.png" alt />
         </div>
         <div class="editor">
           <transition-group tag="div" name="list">
@@ -146,6 +145,7 @@
                 target="_blank"
                 class="comment-user-info"
                 @click.stop="clickUser($event, comment.site)"
+                rel="external nofollow"
                 :href="comment.site"
               >
                 <img :src="userGravatar(comment.email) || '../../assets/img/avatar.jpg'" alt />
@@ -255,6 +255,10 @@ export default {
         return;
       }
       if (!this.user.email) {
+        return;
+      }
+      if (!this.regexp.url.test(this.user.site)) {
+        alert('链接不合法')
         return;
       }
       localStorage.setItem("blog_user", JSON.stringify(this.user));
@@ -390,7 +394,7 @@ export default {
         .catch(err => {});
     },
     clickUser(event, site) {
-      if (!this.regexp.site.test(site)) {
+      if (!site) {
         event.preventDefault();
       }
     },
@@ -487,10 +491,13 @@ export default {
 }
 /* 评论模块样式 */
 .comment .avatar {
-  font-size: 36px;
+  width: 36px;
+  height: 36px;
 }
-.comment .avatar svg{
-  vertical-align: top;
+.comment .avatar img{
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
 }
 .comment .edit-box {
   display: flex;
@@ -519,7 +526,7 @@ export default {
   bottom: 2rem;
   background-color: #fff;
   border: 1px solid #eee;
-  border-radius: 5px;
+  border-radius: 6px;
   overflow-y: auto;
 }
 .emoji-box ul li {
@@ -555,7 +562,7 @@ export default {
 }
 .comment .editor {
   flex-grow: 1;
-  max-width: calc(100% - 56px);
+  max-width: calc(100% - 52px);
 }
 
 .will-reply {
@@ -624,7 +631,7 @@ export default {
   border: 1px solid #eee;
   border-radius: 6px;
   box-sizing: border-box;
-  font-size: .85em;
+  font-size: 0.85em;
   transform: all 1s;
 }
 .comment .user-info > div > input:hover {
@@ -764,7 +771,7 @@ export default {
   padding: 0.8rem;
   margin-bottom: 0.8rem;
   border: 1px solid #eee;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 .reply-box .reply-name a {
   margin-bottom: 0.5rem;
@@ -835,7 +842,7 @@ export default {
   .comment-body .comment-footer > a.reply {
     opacity: 1;
   }
-  .comment .submit{
+  .comment .submit {
     font-size: 15px;
   }
 }
