@@ -120,10 +120,11 @@ export default {
 .article_detail .content p {
   line-height: 1.8rem;
   margin: 1.2rem 0;
+  text-indent: 2em;
 }
 .article_detail .content p img{
   display: block;
-  width: 92%;
+  max-width: 92%;
   margin: 0 auto;
 }
 .article_detail .content ul {

@@ -116,8 +116,10 @@ export default {
   color: #ccc;
 }
 .article article span.tag {
+  min-width: 36px;
   padding: 0.1em 0.4em;
   margin: 0 0.8rem;
+  text-align: center;
   font-size: 10px;
   color: #457e86;
   background: rgba(158, 169, 179, 0.12);
