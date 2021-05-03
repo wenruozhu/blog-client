@@ -57,17 +57,14 @@ export default {
   },
   methods: {
     getArticle() {
-      axios
-        .get(`/api/v1/articles/getAllArticle`)
-        .then(res => {
-          for (const article of res.data) {
-            article.publishTime = moment(article.publishTime).format(
-              "YYYY.MM.DD"
-            );
-          }
-          this.articleList = res.data;
-        })
-        .catch(err => {});
+      this.axios.get(this.IP + "/api/v1/articles/getAllArticle").then(res => {
+        for (const article of res.data) {
+          article.publishTime = moment(article.publishTime).format(
+            "YYYY.MM.DD"
+          );
+        }
+        this.articleList = res.data;
+      });
     }
   }
 };
@@ -116,7 +113,7 @@ export default {
   color: #ccc;
 }
 .article article span.tag {
-  min-width: 36px;
+  min-width: 42px;
   padding: 0.1em 0.4em;
   margin: 0 0.8rem;
   text-align: center;

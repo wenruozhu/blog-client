@@ -39,20 +39,14 @@ export default {
   methods: {
     // 查找文章内容
     searchArticle() {
-      axios
-        .get(`/api/v1/articles/${this.articleId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.joeyToken}`
-          }
-        })
+      this.axios
+        .get(this.IP + `/api/v1/articles/${this.articleId}`)
         .then(res => {
-          if (res.status == 200) {
-            let article = res.data[0];
-            article.publishTime = moment(article.publishTime).format(
-              "YYYY.MM.DD HH:mm"
-            );
-            this.article = article;
-          }
+          let article = res.data[0];
+          article.publishTime = moment(article.publishTime).format(
+            "YYYY.MM.DD HH:mm"
+          );
+          this.article = article;
         });
     },
     commentCount(count) {
@@ -122,9 +116,9 @@ export default {
   margin: 1.2rem 0;
   text-indent: 2em;
 }
-.article_detail .content p img{
+.article_detail .content p img {
   display: block;
-  max-width: 92%;
+  max-width: 100%;
   margin: 0 auto;
 }
 .article_detail .content ul {
@@ -175,7 +169,7 @@ export default {
 }
 .article_detail .content pre code {
   letter-spacing: 0.3px;
-  font-family: Menlo,Monaco,Consolas,Courier New,monospace;
+  font-family: Menlo, Monaco, Consolas, Courier New, monospace;
   font-weight: 500;
   box-sizing: border-box;
 }

@@ -258,7 +258,7 @@ export default {
         return;
       }
       if (!this.regexp.url.test(this.user.site)) {
-        alert('链接不合法')
+        alert("链接不合法");
         return;
       }
       localStorage.setItem("blog_user", JSON.stringify(this.user));
@@ -313,17 +313,19 @@ export default {
     },
     // 获取评论列表
     getComment() {
-      axios.get(`/api/v1/comment/${this.articleId}`).then(res => {
-        if (res.status == 200) {
-          for (const comment of res.data) {
-            comment.publishTime = moment(comment.publishTime).format(
-              "YYYY.MM.DD HH:mm"
-            );
+      this.axios
+        .get(this.IP + `/api/v1/comment/${this.articleId}`)
+        .then(res => {
+          if (res.status == 200) {
+            for (const comment of res.data) {
+              comment.publishTime = moment(comment.publishTime).format(
+                "YYYY.MM.DD HH:mm"
+              );
+            }
+            this.commentList = res.data;
+            this.$emit("commentCount", this.commentList.length);
           }
-          this.commentList = res.data;
-          this.$emit("commentCount", this.commentList.length);
-        }
-      });
+        });
     },
     // 校验用户输入的表单
     checkEmail() {
@@ -379,8 +381,8 @@ export default {
         email: this.user.email,
         site: this.user.site
       };
-      axios
-        .post(`/api/v1/comment`, params)
+      this.axios
+        .post(this.IP + `/api/v1/comment`, params)
         .then(res => {
           if (res.status == 200) {
             this.replyId = 0;
@@ -449,8 +451,8 @@ export default {
       let params = {
         commentId: comment.id
       };
-      axios
-        .post(`/api/v1/comment/likeComment`, params)
+      this.axios
+        .post(this.IP + `/api/v1/comment/likeComment`, params)
         .then(res => {
           if (res.status == 200) {
             this.likeComments.push(comment.id);
@@ -494,7 +496,7 @@ export default {
   width: 36px;
   height: 36px;
 }
-.comment .avatar img{
+.comment .avatar img {
   width: 100%;
   height: 100%;
   border-radius: 6px;

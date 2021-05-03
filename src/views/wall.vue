@@ -104,7 +104,7 @@ export default {
     dialogState() {
       let html = document.getElementsByTagName("html")[0];
       let modalWrapper = document.getElementById("modal-wrapper");
-      
+
       if (this.dialogState) {
         html.setAttribute("style", "overflow: hidden;");
         modalWrapper.setAttribute("style", "position: fixed;");
@@ -118,8 +118,8 @@ export default {
     // 获取留言
     getMessage() {
       this.loading = true;
-      axios
-        .get(`/api/v1/message/${this.pageIndex}`)
+      this.axios
+        .get(this.IP + `/api/v1/message/${this.pageIndex}`)
         .then(res => {
           for (const message of res.data) {
             message.publishTime = moment(message.publishTime).format(
@@ -139,9 +139,6 @@ export default {
           }); */
           this.messageList = this.messageList.concat(res.data);
           this.loading = false;
-        })
-        .catch(err => {
-          console.log(err);
         });
     },
     // 留言
@@ -154,8 +151,8 @@ export default {
         alert("留言内容必填");
         return;
       }
-      axios
-        .post(`/api/v1/message`, params)
+      this.axios
+        .post(this.IP + `/api/v1/message`, params)
         .then(res => {
           const data = res;
           if (res.status == 200) {
