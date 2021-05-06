@@ -5,25 +5,20 @@ import i18n from './locales'
 import App from './App.vue'
 import axios from 'axios';
 import VueAxios from 'vue-axios'
-
-import {setupLan} from './locales/index.js' //引入i18n修改语言的方法
-Vue.prototype.setLanguage = setupLan;
+import { setupLan } from './locales/index.js' //引入i18n修改语言的方法
 import './icons'
 import './assets/css/index.css'
-axios.defaults.timeout = 10000;   // 默认接口超时时间1min
+
+Vue.prototype.setLanguage = setupLan;
 Vue.config.productionTip = false
-Vue.prototype.IP = process.env.VUE_APP_BASE_URL;
+Vue.prototype.IP = process.env.VUE_APP_BASE_URL
 Vue.use(VueAxios, axios)
+axios.defaults.timeout = 10000;   // 默认接口超时时间1min
 //  请求拦截器
 axios.interceptors.request.use(
   (config) => {
     config.headers["Content-Type"] = "application/json"
     config.headers["Accept"] = "*/*"
-    let token = sessionStorage.getItem('access_token') || null
-    if (token) {
-      // 如果token不为null，否则传token给后台
-      config.headers["Authorization"] = `Bearer ${token}`; //请求头加上token
-    }
     return config
   },
   (error) => {
