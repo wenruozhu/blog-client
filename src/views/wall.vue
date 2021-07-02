@@ -110,7 +110,9 @@ export default {
         modalWrapper.setAttribute("style", "position: fixed;");
       } else {
         html.setAttribute("style", "");
-        modalWrapper.setAttribute("style", "display:none");
+        setTimeout(() => {
+          modalWrapper.setAttribute("style", "display:none");
+        }, 600);
       }
     }
   },
